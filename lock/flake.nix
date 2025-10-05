@@ -19,6 +19,12 @@
       repo = "gcmh";
       type = "gitlab";
     };
+    meow = {
+      flake = false;
+      owner = "meow-edit";
+      repo = "meow";
+      type = "github";
+    };
     modus-themes = {
       flake = false;
       owner = "protesilaos";

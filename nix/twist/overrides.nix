@@ -6,7 +6,7 @@
 }:
 _eself: esuper:
 builtins.intersectAttrs esuper {
-  akirak = esuper.akirak.overrideAttrs (old: {
+  kl = esuper.kl.overrideAttrs (old: {
     # The libraries are improperly packaged, so disable byte-compilation for now.
     dontByteCompile = true;
   });

@@ -1,0 +1,1 @@
+(kl :fetcher github :repo "kl/emacs-config" :files ("lisp/*.el"))

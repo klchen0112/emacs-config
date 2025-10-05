@@ -48,6 +48,22 @@
         "type": "gitlab"
       }
     },
+    "meow": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1757868847,
+        "narHash": "sha256-vXdhvLbYruCXmo3Ej2QWFHCMPrkIcX3qOG3JhBY0o5k=",
+        "owner": "meow-edit",
+        "repo": "meow",
+        "rev": "2246f593552c6208bac533de9af04b085fafa6fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "meow-edit",
+        "repo": "meow",
+        "type": "github"
+      }
+    },
     "modus-themes": {
       "flake": false,
       "locked": {
@@ -69,6 +85,7 @@
         "benchmark-init": "benchmark-init",
         "ef-themes": "ef-themes",
         "gcmh": "gcmh",
+        "meow": "meow",
         "modus-themes": "modus-themes",
         "setup": "setup"
       }

@@ -77,6 +77,7 @@ The temporary directory will be cleaned up when Emacs exits.
 I am interested to see if it can reduce the amount of configuration code.
 
 #+begin_src emacs-lisp
+  ;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
   (eval-when-compile
     (require 'setup)
     (require 'cl-lib)
@@ -107,331 +108,17 @@ I am interested to see if it can reduce the amount of configuration code.
       :repeatable t
       :shorthand cadr))
 #+end_src
-*** :auto-insert
-:PROPERTIES:
-:CREATED_TIME: [2022-02-27 Sun 23:59]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :auto-insert (&rest entries)
-     "Add ENTRIES to `auto-insert-alist'."
-     `(with-eval-after-load 'autoinsert
-        (dolist (entry (reverse ',entries))
-          (add-to-list 'auto-insert-alist entry)))))
-#+end_src
 *** :defer
-:PROPERTIES:
-:CREATED_TIME: [2022-02-03 Thu 15:19]
-:END:
-
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro :defer (seconds &optional func)
-      "Call a function at N seconds after init."
-      `(add-hook 'after-init-hook
-                 (lambda ()
-                   (run-with-timer ,seconds nil
-                                   ,(or func (setup-get 'hook)))))))
-#+end_src
-*** :el-patch
-:PROPERTIES:
-:CREATED_TIME: [2022-12-30 Fri 23:59]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (setup-define :el-patch
-      (lambda (&rest body)
-        `(when (require 'el-patch nil t)
-           ,@body))
-      :documentation "Evaluate el-patch definitions."
-      :debug '(setup)
-      :after-loaded t
-      :indent 0))
-#+end_src
-*** :embark
-:PROPERTIES:
-:CREATED_TIME: [2022-04-24 Sun 17:26]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :embark (map interactive &rest bindings)
-     "Proxy or bind embark bindings."
-     :indent 2
-     `(with-eval-after-load 'embark
-        ,@(cl-loop for (key cmd name) in bindings
-                   collect `(keymap-set ,map ,key
-                                        ,(if interactive
-                                             `(defun ,name (arg)
-                                                (interactive ,interactive)
-                                                (,cmd arg))
-                                           `(quote ,cmd)))))))
-#+end_src
-*** :ffap
-:PROPERTIES:
-:CREATED_TIME: [2025-05-19 Mon 21:47]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :ffap (func)
-     "Add a mode-specific entry to ffap-alist."
-     (let ((symbol (if (symbolp func)
-                       func
-                     (eval func)))
-           (mode (setup-get 'mode)))
-       `(with-eval-after-load 'ffap
-          (add-to-list 'ffap-alist '(,mode . ,symbol))))))
-#+end_src
-*** :global-keymap
-:PROPERTIES:
-:CREATED_TIME: [2025-02-15 Sat 14:44]
-:END:
-#+begin_src elisp
-  (eval-when-compile
-    (define-setup-macro
-     :global-keymap (key command)
-     "Use `keymap-global-set' to define global keybindings."
-     :repeatable t
-     `(keymap-global-set ,key ,command)))
-#+end_src
-*** :huan
-:PROPERTIES:
-:CREATED_TIME: [2022-02-27 Sun 21:38]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :huan (&rest entries)
-     "Add ENTRIES to `huan-mode-symbols-alist' for the mode."
-     :indent 0
-     `(with-eval-after-load 'huan
-        (let ((mode ',(setup-get 'mode))
-              (entries ',entries))
-          (if-let* ((cell (assq mode huan-mode-symbols-alist)))
-              (let ((sym (make-symbol "entries")))
-                (set sym (cdr cell))
-                (dolist (ent (reverse entries))
-                  (add-to-list sym ent))
-                (setcdr cell (symbol-value sym)))
-            (push (cons mode entries)
-                  huan-mode-symbols-alist))))))
-#+end_src
-*** :keymap
-:PROPERTIES:
-:CREATED_TIME: [2025-02-15 Sat 14:32]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :keymap (key command)
-     "Use `keymap-set' to define keybindings."
-     :after-loaded t
-     :repeatable t
-     `(keymap-set ,(setup-get 'map) ,key ,command)))
-#+end_src
-*** :keymap-unset
-:PROPERTIES:
-:CREATED_TIME: [2025-02-15 Sat 14:39]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :keymap-unset (key)
-     "Use `keymap-unset' to define keybindings."
-     :after-loaded t
-     :repeatable t
-     `(keymap-unset ,(setup-get 'map) ,key)))
-#+end_src
-*** :mode-project-roots
-:PROPERTIES:
-:CREATED_TIME: [2024-02-12 Mon 10:19]
-:END:
-
-Specify extra root files to help eglot correctly identify project roots.
-
-#+begin_src emacs-lisp
-  (defvar akirak-project-per-mode-root-files nil)
-
-  (eval-when-compile
-    (define-setup-macro
-     :mode-project-roots (&rest filenames)
-     "Define file names indicating the project root."
-     `(add-to-list 'akirak-project-per-mode-root-files
-                   (cons ',(setup-get 'mode) ',filenames)
-                   nil
-                   (lambda (x y) (eq (car x) (car y))))))
-#+end_src
-*** :mode-repl
-:PROPERTIES:
-:CREATED_TIME: [2022-01-31 Mon 19:41]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro :mode-repl (repl-fn)
-      "Add an entry to `rtog/mode-repl-alist'."
-      `(progn
-         (with-eval-after-load 'repl-toggle
-           (push (cons ',(setup-get 'mode) ',repl-fn)
-                 rtog/mode-repl-alist))
-         (add-hook ',(setup-get 'hook)
-                   #'repl-toggle-mode))))
-#+end_src
-*** :nixpkgs
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro :nixpkgs (&rest nixpkgs)
-      "Fake installation of packages from NIXPKGS for executables."))
-#+end_src
-*** :org-babel-language
-#+begin_src elisp
-  (eval-when-compile
-    (define-setup-macro
-     :org-babel-language (t-or-language)
-     "Define file names indicating the project root."
-     (let ((language (if (eq t-or-language t)
-                         (thread-last
-                           (setup-get 'feature)
-                           (symbol-name)
-                           (string-remove-prefix "ob-")
-                           (intern))
-                       t-or-language)))
-       `(with-eval-after-load 'ob
-          (cl-pushnew '(,language . t) org-babel-load-languages)))))
-#+end_src
-*** :org-open
-:PROPERTIES:
-:CREATED_TIME: [2023-07-22 Sat 10:28]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :org-open (file command &rest plist)
-     `(with-eval-after-load 'org
-        (cl-pushnew (cons ,file
-                          ,(if (plist-get plist :file)
-                               `(defun ,(intern (format "akirak/org-open-%s"
-                                                        (if (string-match (rx (+ alnum)) file)
-                                                            (match-string 0 file)
-                                                          file)))
-                                    (filename _)
-                                  (,command filename))
-                             `,command))
-                    org-file-apps))))
-#+end_src
-*** :org-src-lang
-:PROPERTIES:
-:CREATED_TIME: [2023-01-23 Mon 19:37]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :org-src-lang (&rest langs)
-     "Add an entry to `org-src-lang-modes' for the mode."
-     `(with-eval-after-load "org-src"
-        (dolist (lang ',langs)
-          (let ((name ',(thread-last
-                          (setup-get 'mode)
-                          (symbol-name)
-                          (string-remove-suffix "-mode"))))
-            (add-to-list 'org-src-lang-modes
-                         (cons (if (stringp lang)
-                                   lang
-                                 (string-remove-suffix "-ts" name))
-                               (intern name))))))))
-#+end_src
-*** :org-template
-#+begin_src elisp
-  (eval-when-compile
-    (define-setup-macro
-     :org-template (file)
-     "Load templates from the Org file."
-     `(when (or (eq t akirak/enabled-status-tags)
-                (memq 'personal akirak/enabled-status-tags))
-        (add-hook ',(setup-get 'hook)
-                  (lambda () (akirak-org-dog-use-templates ,file))))))
-
-#+end_src
-*** :package-files
-:PROPERTIES:
-:CREATED_TIME: [2023-12-16 Sat 12:56]
-:END:
-
-#+begin_src emacs-lisp
-  (defvar akirak-consult-package-files nil)
-  (defvar akirak-project-vc-extra-root-markers nil
-    "Swap for `project-vc-extra-root-markers'.
-
-  `project-vc-extra-root-markers' slows down Emacs in many ways, so I
-  prefer keeping it empty throughout most of the time. Use
-  `akirak-project-with-extra-vc-root-markers' macro to explicitly declare
-  when you need the extra root markers.")
-
-  (eval-when-compile
-    (define-setup-macro
-     :package-files (&rest filenames)
-     "Define file names of package files."
-     `(dolist (filename ',filenames)
-        (add-to-list 'akirak-consult-package-files filename)
-        (add-to-list 'akirak-project-vc-extra-root-markers filename))))
-#+end_src
-*** :project-roots
-:PROPERTIES:
-:CREATED_TIME: [2024-12-08 Sun 23:37]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :project-roots (&rest globs)
-     (dolist (glob globs)
-       (add-to-list 'akirak-project-vc-extra-root-markers glob))))
-#+end_src
-*** :reformatters
-:PROPERTIES:
-:CREATED_TIME: [2022-02-28 Mon 23:59]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :reformatters (&rest entries)
-     "Define reformatters."
-     (let ((feature (setup-get 'feature)))
-       (macroexp-progn
-        (mapcar (pcase-lambda (`(,name . ,args))
-                  `(reformatter-define ,name ,@args))
-                entries)))))
-#+end_src
-*** :repeat
-:PROPERTIES:
-:CREATED_TIME: [2022-08-04 Thu 23:54]
-:END:
-
-#+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro
-     :repeat (keymap &rest commands)
-     "Set the repeat map of commands."
-     :indent 1
-     (dolist (cmd commands)
-       (put cmd 'repeat-map keymap))))
+  		      "Call a function at N seconds after init."
+  		      `(add-hook 'after-init-hook
+  				 (lambda ()
+  				   (run-with-timer ,seconds nil
+  						   ,(or func (setup-get 'hook)))))))
 #+end_src
 *** :set
-:PROPERTIES:
-:CREATED_TIME: [2022-02-28 Mon 11:30]
-:END:
 
 #+begin_src emacs-lisp
   (eval-when-compile
@@ -442,19 +129,11 @@ Specify extra root files to help eglot correctly identify project roots.
 #+end_src
 
 Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the startup performance.
-*** :status
-By default, settings inside =:status= clauses are not loaded.
-
+*** :nixpkgs
 #+begin_src emacs-lisp
-  (defvar akirak/enabled-status-tags nil)
-
   (eval-when-compile
-    (define-setup-macro :status (tag &rest progn)
-      "Conditionally expand the macro."
-      :indent 1
-      (when (or (eq t akirak/enabled-status-tags)
-                (memq tag akirak/enabled-status-tags))
-        (macroexp-progn progn))))
+    (define-setup-macro :nixpkgs (&rest nixpkgs)
+      "Fake installation of packages from NIXPKGS for executables."))
 #+end_src
 ** Performance                                             :packages:
 # Note: Some of these should be loaded as early as possible.
@@ -482,14 +161,33 @@ the Garbage Collector Magic Hack
 #+end_src
 ** Themes
 #+begin_src emacs-lisp
-  (setup (:package ef-themes)
+  (setup themes
+         (:package modus-themes))
+
+  (setup themes
+         (:package ef-themes)
+         (:when-loaded
+  	(:also-load modus-themes))
          (:set
   	ef-themes-take-over-modus-themes-mode 1
   	modus-themes-mixed-fonts t
   	modus-themes-italic-constructs t
   	modus-themes-disable-other-themes t)
-         (
-  	 (require 'ef-themes)
-  	 (modus-themes-load-random)
-  	 ))
+  	(require 'modus-themes)
+  	(modus-themes-load-random)
+         )
 #+end_src
+* Editor
+** Meow
+#+begin_src emacs-lisp
+  (setup kl-meow)
+  
+  (setup meow
+         (:package meow)
+         (:also-load kl-meow)
+         (:with-function meow-setup (:autoload-this))
+         (meow-global-mode 1)
+         (meow-setup)
+         )
+#+end_src
+** Treesitter

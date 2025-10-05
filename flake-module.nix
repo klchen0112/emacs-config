@@ -41,7 +41,7 @@ let
     initParser = inputs.twist.lib.parseSetup { inherit (inputs.nixpkgs) lib; } { };
 
     inputOverrides = (import ./nix/twist/inputs.nix) // {
-      akirak = _: _: {
+      kl = _: _: {
         src = inputs.nix-filter.lib {
           root = inputs.self;
           include = [ "lisp" ];
@@ -54,7 +54,7 @@ let
     # Packages that should not be added to the lock file
     localPackages = [
       # Don't add this package to the lock file
-      "akirak"
+      "kl"
     ];
 
     exportManifest = true;
