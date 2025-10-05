@@ -157,10 +157,6 @@
     };
   };
 
-  persist = _: super: {
-    files = builtins.removeAttrs super.files [ "persist.texi" ];
-  };
-
   async = _: super: {
     files = builtins.removeAttrs super.files [
       "tests/test-async.el"
