@@ -488,7 +488,7 @@ the Garbage Collector Magic Hack
          (:package tempel-collection)
          )
 #+end_src
-
+** Version Control (Git)
 ** Env
 #+begin_src emacs-lisp
   (setup envrc
@@ -501,4 +501,17 @@ the Garbage Collector Magic Hack
          
   )
   	      
+#+end_src
+* Lang
+** Nix
+#+begin_src emacs-lisp
+  (setup nix-mode
+         (:package nix-mode))
+  (setup nix-ts-mode
+         (:package nix-ts-mode)
+         (:file-match "\\.nix\\'")
+         (:with-mode nix-base-mode
+  		   (:hook eglot-ensure)
+  		   )
+         )
 #+end_src
