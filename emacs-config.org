@@ -733,6 +733,21 @@ the Garbage Collector Magic Hack
 #+begin_src emacs-lisp
   (setup eat (:package eat))
 #+end_src
+** Debugger
+#+begin_src emacs-lisp
+  (setup dape
+         (:package dape)
+         (:set
+  	dape-buffer-window-arrangement 'right
+  	dape-inlay-hints t)
+         (:hook-into repat-mode-hook
+  		   eldoc-mode-hook)
+         (:when-loaded
+  	(add-hook after-init-hook 'daep-breakpoint-load)
+  	(add-hook kill-emasc-hook 'dape-breakpoint-save)
+  	(add-hook dape-compile-hook  'kill-buffer)
+  	))
+#+end_src
 * Lang
 ** Nix
 #+begin_src emacs-lisp
@@ -751,5 +766,73 @@ the Garbage Collector Magic Hack
          (:with-mode nix-base-mode
   		   (:hook eglot-ensure)
   		   )
+         (add-to-list 'auto-mode-alist
+  		    (cons "/flake\\.lock\\'"
+  			  ('json-ts-mode
+  			   'js-mode)))
+
          )
+#+end_src
+** Java
+#+begin_src emacs-lisp
+  (setup java-ts-mode
+         (:file-match "\\.java\\'" )
+         )
+
+
+  (setup eglot-java
+         (:package eglot-java)
+         (:hook-into java-base-mode-hook)
+         )
+#+end_src
+** Scala
+#+begin_src emacs-lisp
+  (setup scala-ts-mode
+         (:package scala-ts-mode)
+         )
+#+end_src
+** Gradle
+
+** Python
+#+begin_src emacs-lisp
+  (setup python-mode
+         (:file-match "\\.py\\'")
+         )
+
+  (setup lazy-ruff
+         (:package lazy-ruff)
+  )
+
+
+  (setup pet
+         (:package pet)
+         (:hook-into python-base-mode-hook))
+#+end_src
+** Json
+#+begin_src emacs-lisp
+  (setup json-ts-mode
+         (:file-match "\\.js\\(?:on\\|[hl]int\\(?:rc\\)?\\)\\'")
+         (:with-feature json-snatcher)
+         )
+#+end_src
+** Just
+#+begin_src emacs-lisp
+  (setup just-mode
+         (:package just-mode)
+         (:file-match
+  	"/[Jj]ustfile\\'"
+  	"\\.[Jj]ust\\(file\\)?\\'" )
+         )
+  (setup justl
+         (:package justl))
+#+end_src
+** Yaml
+#+begin_src emacs-lisp
+  (setup yaml-ts-mode)
+#+end_src
+** Docker
+#+begin_src emacs-lisp
+  (setup dockerfile-ts-mode
+    (:file-match ".*Dockerfile\\'")
+  )
 #+end_src
