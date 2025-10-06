@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "dash": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1755165091,
+        "narHash": "sha256-X1ugYAPFgoQoD6teyvGoqcfEau6Jp2akci2fAMgYkS0=",
+        "owner": "magnars",
+        "repo": "dash.el",
+        "rev": "af5ea5d8a13735fa27d2c3e6f756d065639a7b45",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magnars",
+        "repo": "dash.el",
+        "type": "github"
+      }
+    },
     "ef-themes": {
       "flake": false,
       "locked": {
@@ -64,6 +80,22 @@
         "type": "github"
       }
     },
+    "meow-tree-sitter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1747165728,
+        "narHash": "sha256-4o8rJUDBjSSngFmQvkqOLvums8p+0ICtO4TanER8Yxc=",
+        "owner": "skissue",
+        "repo": "meow-tree-sitter",
+        "rev": "b05d54a5e19f8ba0258b0bbf0ffcd4bc7bad112c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "skissue",
+        "repo": "meow-tree-sitter",
+        "type": "github"
+      }
+    },
     "modus-themes": {
       "flake": false,
       "locked": {
@@ -80,14 +112,68 @@
         "type": "github"
       }
     },
+    "popup": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1755007360,
+        "narHash": "sha256-3Rkb9mjOqOGuSsAa7yW83Ny4AxW3ClDieBeSIY9imXQ=",
+        "owner": "auto-complete",
+        "repo": "popup-el",
+        "rev": "b189a4e8ccf18356395878c3d38a23df834d3898",
+        "type": "github"
+      },
+      "original": {
+        "owner": "auto-complete",
+        "repo": "popup-el",
+        "type": "github"
+      }
+    },
+    "posframe": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1739236257,
+        "narHash": "sha256-E03a24j9WvJJZpyjJ0nyciYQuBiZEwL0W+5hPuqUhes=",
+        "owner": "tumashu",
+        "repo": "posframe",
+        "rev": "12f540c9ad5da09673b2bca1132b41f94c134e82",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tumashu",
+        "repo": "posframe",
+        "type": "github"
+      }
+    },
+    "rime": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749881062,
+        "narHash": "sha256-77EAwHoa0i6b//GkuYdC+3tQVbG+YJJzOVvNV0Nj6tk=",
+        "owner": "DogLooksGood",
+        "repo": "emacs-rime",
+        "rev": "1b70d9cfbac9b11a934007f103b1abc9a034268f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DogLooksGood",
+        "repo": "emacs-rime",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "benchmark-init": "benchmark-init",
+        "dash": "dash",
         "ef-themes": "ef-themes",
         "gcmh": "gcmh",
         "meow": "meow",
+        "meow-tree-sitter": "meow-tree-sitter",
         "modus-themes": "modus-themes",
-        "setup": "setup"
+        "popup": "popup",
+        "posframe": "posframe",
+        "rime": "rime",
+        "setup": "setup",
+        "sis": "sis"
       }
     },
     "setup": {
@@ -104,6 +190,22 @@
       "original": {
         "type": "git",
         "url": "https://codeberg.org/pkal/setup.el"
+      }
+    },
+    "sis": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1745694997,
+        "narHash": "sha256-k9OBf3vQRIlCV52BXbYG1GQx09wY8BAqC0kLN0EojNc=",
+        "owner": "laishulu",
+        "repo": "emacs-smart-input-source",
+        "rev": "a438a90209289fd12156285c06ce98e13e2f5834",
+        "type": "github"
+      },
+      "original": {
+        "owner": "laishulu",
+        "repo": "emacs-smart-input-source",
+        "type": "github"
       }
     }
   },

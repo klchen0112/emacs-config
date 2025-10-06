@@ -69,7 +69,7 @@
 
   nixConfig = {
     extra-substituters = [
-      "https://akirak.cachix.org"
+      "https://klchen0112.cachix.org"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [

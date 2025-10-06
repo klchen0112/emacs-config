@@ -68,7 +68,15 @@ There is another version, an X11 variant, which is now discouraged:
 #+end_src
 
 Both commands create a temporary directory which will be used as ~user-emacs-directory~ containing an init file.
-The temporary directory will be cleaned up when Emacs exits.
+There temporary directory will be cleaned up when Emacs exits.
+** Constants
+#+begin_src emacs-lisp
+  ;; 判断操作系统类型
+  (defconst IS-MAC (eq system-type 'darwin))
+  (defconst IS-LINUX (eq system-type 'gnu/linux))
+  (defconst IS-WINDOWS (eq system-type 'windows-nt))
+
+#+end_src
 ** Setup.el
 :PROPERTIES:
 :SORTING_TYPE: a
@@ -77,6 +85,7 @@ The temporary directory will be cleaned up when Emacs exits.
 I am interested to see if it can reduce the amount of configuration code.
 
 #+begin_src emacs-lisp
+  ;;; init.el --- init.files -*- lexical-binding: t -*-
   (eval-when-compile
     (require 'setup)
     (require 'cl-lib)
@@ -134,6 +143,11 @@ Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the sta
     (define-setup-macro :nixpkgs (&rest nixpkgs)
       "Fake installation of packages from NIXPKGS for executables."))
 #+end_src
+** Library
+*** kl
+#+begin_src emacs-lisp
+  (setup (:package kl))
+#+end_src
 ** Performance                                             :packages:
 # Note: Some of these should be loaded as early as possible.
 *** benchmark-init                            :profiling:initialization:
@@ -144,8 +158,10 @@ Benchmarks for require and load calls
 
 #+begin_src emacs-lisp
   (setup (:package benchmark-init)
-    (:require benchmark-init)
-    (add-hook 'after-init-hook 'benchmark-init/deactivate))
+         (:require benchmark-init)
+         (:only-if init-file-debug
+  		 (add-hook 'after-init-hook 'benchmark-init/deactivate))
+         )
 #+end_src
 *** gcmh                                               :performance:
 #+begin_quote
@@ -161,9 +177,6 @@ the Garbage Collector Magic Hack
 ** Themes
 #+begin_src emacs-lisp
   (setup themes
-         (:package modus-themes))
-
-  (setup themes
          (:package ef-themes)
          (:when-loaded
   	(:also-load modus-themes))
@@ -172,22 +185,102 @@ the Garbage Collector Magic Hack
   	modus-themes-mixed-fonts t
   	modus-themes-italic-constructs t
   	modus-themes-disable-other-themes t)
-  	(require 'modus-themes)
-  	(modus-themes-load-random)
+         (require 'ef-themes)
+         (modus-themes-load-random)
          )
+#+end_src
+*** display-line-number
+#+begin_src emacs-lisp
+  (setup display-fill-column-indicator (:hook-into prog-mode))
+  (setup display-line-numbers (:hook-into prog-mode)
+         (:set display-line-numbers-width 2
+  	     display-line-numbers-type 'relative))
+#+end_src
+
+*** Scroll
+#+begin_src emacs-lisp
+
+  (setup pixel-scroll
+         (:only-if  (version<= "29" emacs-version)
+  		  (:with-mode pixel-scroll-precision-mode
+  			      ;; TODO: Find a better way to hook the minor mode
+  			      (:hook-into find-file-hook
+  					  help-mode-hook))))
+#+end_src
+*** Font
+#+begin_src emacs-lisp
+  ;; Main typeface
+  (set-face-attribute 'default nil :family "M+1Code Nerd Font Propo" :height 160)
+
+  ;; Proportionately spaced typeface
+  (set-face-attribute 'variable-pitch nil :family "M+1Code Nerd Font Propo" :height 1.0)
+
+  ;; Monospaced typeface
+  (set-face-attribute 'fixed-pitch nil :family "M+1Code Nerd Font Propo" :height 1.0)
+
+  ;; symbol fonts
+  (set-fontset-font t 'symbol   (font-spec :family "Apple Symobols"     ))
+  (set-fontset-font t 'symbol   (font-spec :family "Apple Color Emoji"  ))
+  (set-fontset-font t 'symbol   (font-spec :family "Symbola"            ))
+  (set-fontset-font t 'symbol   (font-spec :family "Noto Color Emoji"   ))
+  (set-fontset-font t 'symbol   (font-spec :family "Liberation Mono"    ))
+  (set-fontset-font t 'symbol   (font-spec :family "Noto Sans Symbols2" ))
+  (set-fontset-font t 'symbol   (font-spec :family "Segoe UI Emoji"     ))
+  (set-fontset-font t 'symbol   (font-spec :family "FreeSerif"          ))
+  (set-fontset-font t 'symbol   (font-spec :family "Twitter Color Emoji"))
+  ;; i18n 
+  ;; East Asia: 你好, 早晨, こんにちは, 안녕하세요
+  (set-fontset-font t 'han      (font-spec :family "TsangerJinKai05"   ))
+  (set-fontset-font t 'kana      (font-spec :family "TsangerJinKai05"   ))
+  (set-fontset-font t 'hangul      (font-spec :family "TsangerJinKai05"   ))
+  (set-fontset-font t 'cjk-misc (font-spec :family "Noto Serif CJK SC" ))
+  ;; Cyrillic: Привет, Здравствуйте, Здраво, Здравейте
+  (set-fontset-font t 'cyrillic (font-spec :family "Noto Serif"         ))
 #+end_src
 * Editor
 ** Meow
 #+begin_src emacs-lisp
-    (setup kl
-  	 (:package kl))
-    
-    (setup meow
-           (:package meow)
-           (:also-load kl-meow)
-           (:with-function meow-setup (:autoload-this))
-           (meow-global-mode 1)
-           (meow-setup)
-           )
+  (setup meow
+         (:package meow)
+         (:also-load kl-meow)
+         (:also-load meow-tree-sitter)
+         (:with-function meow-setup (:autoload-this))
+         (meow-global-mode 1)
+         (meow-setup)
+         )
+  (setup meow-tree-sitter
+         (:package meow-tree-sitter)
+         (:also-load treesit)
+         (:when-loaded (meow-tree-sitter-register-defaults)))
 #+end_src
-** Treesitter
+* Inputmethod
+#+begin_src emacs-lisp
+  (setup sis
+         (:package sis)
+         (:only-if (or IS-MAC IS-LINUX))
+         (:set sis-ism-lazyman-config '(
+  				     "com.apple.keylayout.UnicodeHexInput"
+  				     "im.rime.inputmethod.Squirrel.Rime"
+  				     )
+  	     sis-global-cursor-color-mode t
+  	     sis-global-respect-mode t
+  	     sis-global-context-mode t
+  	     sis-global-inline-mode t
+  	     )
+         (add-hook 'meow-insert-exit-hook #'sis-set-english)
+         )
+
+;;  (setup rime
+;;         (:package rime)
+;;         (:defer 1)
+;;         (:set rime-user-data-dir (if IS-LINUX "~/.local/share/fcitx5/rime"
+;;  				  "~/Library/Rime")
+;;
+;;  	     rime-show-candidate 'posframe
+;;  	     rime-show-preedit 'inline
+;;  	     default-input-method "rime"
+;;  	     rime-inline-ascii-trigger 'shift-r
+;;  	     rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
+;;         )
+
+#+end_src

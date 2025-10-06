@@ -17,3 +17,10 @@
              (setq file-name-handler-alist ',file-name-handler-alist))
           99)
 (setq file-name-handler-alist nil)
+
+
+(when (and (fboundp 'native-comp-available-p) (native-comp-available-p))
+  (setq native-comp-async-report-warnings-errors nil
+        native-comp-deferred-compilation t
+	package-native-compile t)
+  )
