@@ -69,15 +69,16 @@ There is another version, an X11 variant, which is now discouraged:
 
 Both commands create a temporary directory which will be used as ~user-emacs-directory~ containing an init file.
 There temporary directory will be cleaned up when Emacs exits.
-** Constants
+* Constants
 #+begin_src emacs-lisp
+  ;;; init.el --- init.files -*- lexical-binding: t -*-
   ;; 判断操作系统类型
   (defconst IS-MAC (eq system-type 'darwin))
   (defconst IS-LINUX (eq system-type 'gnu/linux))
   (defconst IS-WINDOWS (eq system-type 'windows-nt))
 
 #+end_src
-** Setup.el
+* Setup.el
 :PROPERTIES:
 :SORTING_TYPE: a
 :END:
@@ -85,7 +86,6 @@ There temporary directory will be cleaned up when Emacs exits.
 I am interested to see if it can reduce the amount of configuration code.
 
 #+begin_src emacs-lisp
-  ;;; init.el --- init.files -*- lexical-binding: t -*-
   (eval-when-compile
     (require 'setup)
     (require 'cl-lib)
@@ -116,7 +116,7 @@ I am interested to see if it can reduce the amount of configuration code.
       :repeatable t
       :shorthand cadr))
 #+end_src
-*** :defer
+** :defer
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro :defer (seconds &optional func)
@@ -126,7 +126,7 @@ I am interested to see if it can reduce the amount of configuration code.
   				   (run-with-timer ,seconds nil
   						   ,(or func (setup-get 'hook)))))))
 #+end_src
-*** :set
+** :set
 
 #+begin_src emacs-lisp
   (eval-when-compile
@@ -137,18 +137,18 @@ I am interested to see if it can reduce the amount of configuration code.
 #+end_src
 
 Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the startup performance.
-*** :nixpkgs
+** :nixpkgs
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro :nixpkgs (&rest nixpkgs)
       "Fake installation of packages from NIXPKGS for executables."))
 #+end_src
-** Library
+* Library
 *** kl
 #+begin_src emacs-lisp
   (setup (:package kl))
 #+end_src
-** Performance                                             :packages:
+* Performance                                             :packages:
 # Note: Some of these should be loaded as early as possible.
 *** benchmark-init                            :profiling:initialization:
 #+begin_quote
@@ -174,7 +174,7 @@ the Garbage Collector Magic Hack
     (:set gcmh-verbose init-file-debug
           gcmh-high-cons-threshold (* 128 1024 1024)))
 #+end_src
-** Themes
+* Themes
 #+begin_src emacs-lisp
   (setup themes
          (:package ef-themes)
@@ -260,6 +260,14 @@ the Garbage Collector Magic Hack
          (:hook column-number-mode)
          )
 #+end_src
+** Which-key
+#+begin_src emacs-lisp
+  (setup which-key
+         (:package which-key)
+         (:hook-into after-init-hook)
+         (:set which-key-idle-delay 0.3)
+         )
+#+end_src
 * Editor
 ** Meow
 #+begin_src emacs-lisp
@@ -275,6 +283,22 @@ the Garbage Collector Magic Hack
          (:package meow-tree-sitter)
          (:also-load treesit)
          (:when-loaded (meow-tree-sitter-register-defaults)))
+#+end_src
+** Treesit 
+#+begin_src emacs-lisp
+  (setup treesit
+         (:defer 1)
+         (:only-if (fboundp 'treesit-available-p))
+         (:also-load treesit-fold)
+         )
+  (setup treesit-fold
+         (:only-if (fboundp 'treesit-available-p))
+         (:package treesit-fold)
+         )
+#+end_src
+** Editor-config
+#+begin_src emacs-lisp
+  (setup editorconfig)
 #+end_src
 * Inputmethod
 #+begin_src emacs-lisp
@@ -307,3 +331,61 @@ the Garbage Collector Magic Hack
 ;;         )
 
 #+end_src
+* Env & shell
+* Writing
+* Programming
+
+** eglot
+
+** Completion
+*** Vertico, orderless and marginalia
+#+begin_src emacs-lisp
+  (setup orderless
+         (:package orderless)
+         (:set
+  	completion-styles '(orderless basic)
+  	completion-category-overrides '((file (styles partial-completion)))
+  	completion-category-defaults nil ;; Disable defaults, use our settings
+  	completion-pcm-leading-wildcard t
+  	orderless-component-separator #'orderless-escapable-split-on-space
+  	)
+         )
+
+  (setup vertico
+         (:package vertico)
+         (:also-load orderless)
+         (:also-load marginalia)
+         (:hook-into after-init-hook)
+         (:set vertico-cycle t)
+         )
+
+  (setup marginalia
+         (:package marginalia)
+         (:also-load nerd-icons-completion)
+         (:hook-into after-init-hook))
+
+
+  (setup nerd-icons-completion
+         (:package nerd-icons-completion)
+         (:when-loaded
+  	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+         )
+#+end_src
+*** Embark and consult
+#+begin_src emacs-lisp
+  (setup embark
+         (:package embark))
+  (setup consult
+         (:package consult))
+  (setup embark-consult
+         (:package embark-consult)
+         (with-eval-after-load 'consult
+  	 (require 'embark-consult))
+         (with-eval-after-load 'embark
+  	 (require 'embark-consult))
+         (:with-mode embark-collect-mode
+  		   (:hook consult-preview-at-point-mode))
+         )
+#+end_src
+** snippest
+
