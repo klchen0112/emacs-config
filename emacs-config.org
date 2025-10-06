@@ -758,22 +758,20 @@ the Garbage Collector Magic Hack
          ;; Install alejandra for reformatting.
          (:nixpkgs nixfmt)
          (:reformatters
-  	;; nixfmt-rfc-style is now recommended, but keep alejandra until I finish
-  	;; migration
-  	(nixfmt-rfc-style :program "nixfmt"))
+    	;; nixfmt-rfc-style is now recommended, but keep alejandra until I finish
+    	;; migration
+    	(nixfmt-rfc-style :program "nixfmt"))
          (:with-mode nix-base-mode
-  		   (:hook eglot-ensure)
-  		   )
-         (add-to-list 'auto-mode-alist
-  		    (cons "/flake\\.lock\\'"
-  			  ('json-ts-mode
-  			   'js-mode)))
-
+    		   (:hook eglot-ensure)
+    		   )
          )
+  (setup json-mode
+         (:file-match "/flake\\.lock\\'"))
 #+end_src
 ** Java
 #+begin_src emacs-lisp
-  (setup java-ts-mode
+  (setup java-mode
+         (:package json-mode)
          (:file-match "\\.java\\'" )
          )
 
