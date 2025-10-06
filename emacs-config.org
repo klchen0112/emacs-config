@@ -740,8 +740,6 @@ the Garbage Collector Magic Hack
          (:set
   	dape-buffer-window-arrangement 'right
   	dape-inlay-hints t)
-         (:hook-into repat-mode-hook
-  		   eldoc-mode-hook)
          (:when-loaded
   	(add-hook after-init-hook 'daep-breakpoint-load)
   	(add-hook kill-emasc-hook 'dape-breakpoint-save)
