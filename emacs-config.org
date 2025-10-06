@@ -149,6 +149,16 @@ I am interested to see if it can reduce the amount of configuration code.
 #+end_src
 
 Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the startup performance.
+** :keymap-unset
+#+begin_src emacs-lisp
+  (eval-when-compile
+    (define-setup-macro
+     :keymap-unset (key)
+     "Use `keymap-unset' to define keybindings."
+     :after-loaded t
+     :repeatable t
+     `(keymap-unset ,(setup-get 'map) ,key)))
+#+end_src
 ** :mode-repl
 #+begin_src emacs-lisp
   (eval-when-compile
@@ -355,6 +365,11 @@ the Garbage Collector Magic Hack
   			 nil))
                          (list "@biomejs/biome" "format" (buffer-file-name)
                                (concat "--stdin-file-path=" (buffer-file-name)))))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setup (:package repl-toggle)
+         (:set rtog/fullscreen t))
 #+end_src
 * Inputmethod
 #+begin_src emacs-lisp
