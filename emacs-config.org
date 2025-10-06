@@ -77,7 +77,6 @@ The temporary directory will be cleaned up when Emacs exits.
 I am interested to see if it can reduce the amount of configuration code.
 
 #+begin_src emacs-lisp
-  ;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
   (eval-when-compile
     (require 'setup)
     (require 'cl-lib)
@@ -180,14 +179,15 @@ the Garbage Collector Magic Hack
 * Editor
 ** Meow
 #+begin_src emacs-lisp
-  (setup kl-meow)
-  
-  (setup meow
-         (:package meow)
-         (:also-load kl-meow)
-         (:with-function meow-setup (:autoload-this))
-         (meow-global-mode 1)
-         (meow-setup)
-         )
+    (setup kl
+  	 (:package kl))
+    
+    (setup meow
+           (:package meow)
+           (:also-load kl-meow)
+           (:with-function meow-setup (:autoload-this))
+           (meow-global-mode 1)
+           (meow-setup)
+           )
 #+end_src
 ** Treesitter

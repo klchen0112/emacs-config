@@ -24,7 +24,7 @@ let
             prependToInitFile = ''
               ;; -*- lexical-binding: t; no-byte-compile: t; -*-
                 (setq custom-file (locate-user-emacs-file "custom.el"))
-                (setq akirak/enabled-status-tags ${if personalized then "t" else "nil"})
+                (setq kl/enabled-status-tags ${if personalized then "t" else "nil"})
             '';
           }
           // otherSettings.value
