@@ -69,14 +69,21 @@ There is another version, an X11 variant, which is now discouraged:
 
 Both commands create a temporary directory which will be used as ~user-emacs-directory~ containing an init file.
 There temporary directory will be cleaned up when Emacs exits.
-* Constants
+* Customization
+** init
 #+begin_src emacs-lisp
-  ;;; init.el --- default file -*- lexical-binding: t; -*-
-  ;; 判断操作系统类型
-  (defconst IS-MAC (eq system-type 'darwin))
-  (defconst IS-LINUX (eq system-type 'gnu/linux))
-  (defconst IS-WINDOWS (eq system-type 'windows-nt))
+;;; init.el --- Initialization -*- lexical-binding: t; -*-
+#+end_src
+** Constants
+#+begin_src emacs-lisp
+    ;; 判断操作系统类型
+    (defconst IS-MAC (eq system-type 'darwin))
+    (defconst IS-LINUX (eq system-type 'gnu/linux))
+    (defconst IS-WINDOWS (eq system-type 'windows-nt))
+#+end_src
 
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" temporary-file-directory))
 #+end_src
 * Setup.el
 :PROPERTIES:
@@ -210,10 +217,8 @@ the Garbage Collector Magic Hack
 #+end_src
 * Themes
 #+begin_src emacs-lisp
-  (setup themes
+  (setup ef-themes
          (:package ef-themes)
-         (:when-loaded
-  	(:also-load modus-themes))
          (:set
   	ef-themes-take-over-modus-themes-mode 1
   	modus-themes-mixed-fonts t
@@ -714,6 +719,7 @@ the Garbage Collector Magic Hack
          (:also-load nerd-icons-dired))
 
   (setup nerd-icons-dired
+    (:package nerd-icons-dired)
          (:hook-into dired-mode-hook))
 
   (setup dired
@@ -747,6 +753,10 @@ the Garbage Collector Magic Hack
   	))
 #+end_src
 * Lang
+** elisp
+#+begin_src emacs-lisp
+  (setup elisp-ts-mode)
+#+end_src
 ** Nix
 #+begin_src emacs-lisp
   (setup nix-mode
