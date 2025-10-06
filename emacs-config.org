@@ -116,6 +116,18 @@ I am interested to see if it can reduce the amount of configuration code.
       :repeatable t
       :shorthand cadr))
 #+end_src
+** :reformatters
+#+begin_src emacs-lisp
+  (eval-when-compile
+    (define-setup-macro
+     :reformatters (&rest entries)
+     "Define reformatters."
+     (let ((feature (setup-get 'feature)))
+       (macroexp-progn
+        (mapcar (pcase-lambda (`(,name . ,args))
+                  `(reformatter-define ,name ,@args))
+                entries)))))
+#+end_src
 ** :defer
 #+begin_src emacs-lisp
   (eval-when-compile
@@ -137,6 +149,18 @@ I am interested to see if it can reduce the amount of configuration code.
 #+end_src
 
 Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the startup performance.
+** :mode-repl
+#+begin_src emacs-lisp
+  (eval-when-compile
+    (define-setup-macro :mode-repl (repl-fn)
+      "Add an entry to `rtog/mode-repl-alist'."
+      `(progn
+         (with-eval-after-load 'repl-toggle
+           (push (cons ',(setup-get 'mode) ',repl-fn)
+                 rtog/mode-repl-alist))
+         (add-hook ',(setup-get 'hook)
+                   #'repl-toggle-mode))))
+#+end_src
 ** :nixpkgs
 #+begin_src emacs-lisp
   (eval-when-compile
@@ -298,6 +322,40 @@ the Garbage Collector Magic Hack
 #+begin_src emacs-lisp
   (setup editorconfig)
 #+end_src
+** Fmt
+#+begin_src emacs-lisp
+  (setup (:package reformatter)
+         (:reformatters
+  	;; If you use prettier, you need to install its executable separately.
+  	(prettier
+  	 :program "prettier"
+  	 :args (list (concat "--plugin-search-dir="
+                               (expand-file-name
+                                (locate-dominating-file default-directory "package.json")))
+                       "--stdin-filepath" (buffer-file-name)))
+  	(treefmt
+  	 :program "treefmt"
+  	 :args (list "--stdin" (buffer-file-name)))
+
+  	(yamlfmt
+  	 :program "yamlfmt"
+  	 :args (list "-"))
+
+  	(jq-format
+  	 :program "jq"
+  	 :args (list "."))
+
+  	(biome-format
+  	 :program
+  	 (cond
+  	  ((executable-find "bunx")
+  	   "bunx"))
+  	 :args (append (cond
+  			((executable-find "bunx")
+  			 nil))
+                         (list "@biomejs/biome" "format" (buffer-file-name)
+                               (concat "--stdin-file-path=" (buffer-file-name)))))))
+#+end_src
 * Inputmethod
 #+begin_src emacs-lisp
   (setup sis
@@ -332,7 +390,6 @@ the Garbage Collector Magic Hack
 * Env & shell
 * Writing
 * Programming
-
 ** eglot
 #+begin_src emacs-lisp
   (setup eglot
@@ -510,6 +567,13 @@ the Garbage Collector Magic Hack
   (setup nix-ts-mode
          (:package nix-ts-mode)
          (:file-match "\\.nix\\'")
+         (:mode-repl nix-repl)
+         ;; Install alejandra for reformatting.
+         (:nixpkgs nixfmt)
+         (:reformatters
+  	;; nixfmt-rfc-style is now recommended, but keep alejandra until I finish
+  	;; migration
+  	(nixfmt-rfc-style :program "nixfmt"))
          (:with-mode nix-base-mode
   		   (:hook eglot-ensure)
   		   )
