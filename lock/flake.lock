@@ -796,6 +796,22 @@
         "type": "github"
       }
     },
+    "nerd-icons-dired": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756318795,
+        "narHash": "sha256-N388FDrm/zsT4frBv1rl8XE+Pflv90XmLHM96SivPXQ=",
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons-dired",
+        "rev": "adf9a2bb5f3f13be7a676923639337f3fcc5d8c3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons-dired",
+        "type": "github"
+      }
+    },
     "nix-mode": {
       "flake": false,
       "locked": {
@@ -1071,6 +1087,7 @@
         "nerd-icons": "nerd-icons",
         "nerd-icons-completion": "nerd-icons-completion",
         "nerd-icons-corfu": "nerd-icons-corfu",
+        "nerd-icons-dired": "nerd-icons-dired",
         "nix-mode": "nix-mode",
         "nix-ts-mode": "nix-ts-mode",
         "orderless": "orderless",

@@ -300,6 +300,12 @@
       repo = "nerd-icons-corfu";
       type = "github";
     };
+    nerd-icons-dired = {
+      flake = false;
+      owner = "rainstormstudio";
+      repo = "nerd-icons-dired";
+      type = "github";
+    };
     nix-mode = {
       flake = false;
       owner = "NixOS";
