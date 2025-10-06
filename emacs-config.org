@@ -404,6 +404,117 @@ the Garbage Collector Magic Hack
 #+end_src
 * Env & shell
 * Writing
+** Org
+#+begin_src emacs-lisp
+  (setup org
+         (:package org)
+         (:set org-directory "~/org")
+         (:with-feature org-agenda
+  		      (:set
+  		       ;; 时间前导0
+  		       org-agenda-time-leading-zero t
+  		       ;; 默认显示区间
+  		       org-agenda-span 7
+  		       ;; agenda view 默认从周一开始显示
+  		       org-agenda-start-on-weekday 1)
+  		      )
+         )
+
+  (setup org
+         (:also-load org-download))
+  
+  (setup org-download
+         (:package org-download)
+         (:set   org-download-method 'directory
+  	       org-download-image-dir "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/org-attach"
+  	       org-download-heading-lvl 'nil)
+         )
+
+  (setup org
+         (:also-load org-modern))
+
+  (setup org-modern
+         (:package org-modern)
+         (:hook-into org-mode-hook)
+         (:set
+  	;; Edit settings
+  	org-auto-align-tags nil
+  	org-tags-column 0
+  	org-catch-invisible-edits 'show-and-error
+  	org-special-ctrl-a/e t
+  	org-insert-heading-respect-content t
+
+  	;; Org styling, hide markup etc.
+  	org-hide-emphasis-markers t
+  	org-pretty-entities t
+  	org-agenda-tags-column 0
+  	org-ellipsis "…")
+         (:when-loaded
+  	(modify-all-frames-parameters
+  	 '((right-divider-width . 40)
+  	   (internal-border-width . 40)))
+  	(dolist (face '(window-divider
+  			window-divider-first-pixel
+  			window-divider-last-pixel))
+  	  (face-spec-reset-face face)
+  	  (set-face-foreground face (face-attribute 'default :background)))
+  	(set-face-background 'fringe (face-attribute 'default :background))
+  	))
+#+end_src
+** Org-roam
+#+begin_src emacs-lisp
+  (setup org
+         (:also-load org-roam))
+
+  (setup org-roam
+         (:package org-roam)
+         (:set org-roam-directory (file-truename org-directory))
+         (:when-loaded  (org-roam-db-autosync-mode)
+  		      (setq org-id-link-to-org-use-id t)
+  		      (setq org-roam-completion-everywhere t))
+         )
+
+  (setup org-roam
+         (:also-load org-roam-ui))
+  (setup org-roam-ui
+         (:package org-roam-ui)
+         (:when-loaded
+  	(setq org-roam-ui-sync-theme t
+                org-roam-ui-follow t
+  	      org-roam-ui-update-on-save t
+                org-roam-ui-open-on-start nil
+  	      )
+  	))
+
+  (setup org-roam
+         (:also-load org-roam-timestamps))
+  (setup org-roam-timestamps
+         (:package org-roam-timestamps)
+         (:hook-into org-roam-mode-hook)
+         (:set org-roam-timestamps-parent-file t))
+
+
+  (setup org-roam
+         (:also-load org-transclusion))
+  (setup org-transclusion
+         (:package org-transclusion)
+         (:hook-into org-roam-mode-hook) )
+
+  (setup org-roam
+         (:also-load consult-org-roam))
+  (setup consult-org-roam
+         (:package consult-org-roam)
+         (:set
+  	;; Use `ripgrep' for searching with `consult-org-roam-search'
+  	consult-org-roam-grep-func #'consult-ripgrep
+  	;; Configure a custom narrow key for `consult-buffer'
+  	consult-org-roam-buffer-narrow-key ?r
+  	;; Display org-roam buffers right after non-org-roam buffers
+  	;; in consult-buffer (and not down at the bottom)
+  	consult-org-roam-buffer-after-buffers t
+  	)
+         (with-eval-after-load 'consult))
+#+end_src
 * Programming
 ** eglot
 #+begin_src emacs-lisp
