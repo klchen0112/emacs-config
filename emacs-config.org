@@ -671,7 +671,23 @@ the Garbage Collector Magic Hack
          (:package tempel-collection)
          )
 #+end_src
+* tools
 ** Version Control (Git)
+#+begin_src emacs-lisp
+
+  (setup magit
+         (:package magit)
+         (:also-load forge)
+         )
+
+  (setup forge
+         (:package forge))
+
+  (setup diff-hl
+         (:package diff-hl))
+
+  (setup smerge-mode)
+#+end_src
 ** Env
 #+begin_src emacs-lisp
   (setup envrc
@@ -684,6 +700,38 @@ the Garbage Collector Magic Hack
          
   )
   	      
+#+end_src
+** Project
+#+begin_src emacs-lisp
+  (setup projectile
+         (:package projectile)
+         (projectile-mode +1)
+         )
+#+end_src
+** File
+#+begin_src emacs-lisp
+  (setup dired
+         (:also-load nerd-icons-dired))
+
+  (setup nerd-icons-dired
+         (:hook-into dired-mode-hook))
+
+  (setup dired
+         (:also-load dirvish))
+  (setup dirvish
+         (:package dirvish)
+         )
+
+  (setup dired
+         (:also-load diredfl))
+  (setup diredfl
+         (:package diredfl)
+    )
+
+#+end_src
+** Terminal
+#+begin_src emacs-lisp
+  (setup eat (:package eat))
 #+end_src
 * Lang
 ** Nix
