@@ -237,6 +237,29 @@ the Garbage Collector Magic Hack
   ;; Cyrillic: Привет, Здравствуйте, Здраво, Здравейте
   (set-fontset-font t 'cyrillic (font-spec :family "Noto Serif"         ))
 #+end_src
+
+**** Nerd-icons
+#+begin_src emacs-lisp
+  (setup nerd-icons
+         (:package nerd-icons)
+         (:defer 1)
+  )
+#+end_src
+*** Modeline and dashboard
+#+begin_src emacs-lisp
+  (setup dashboard
+         (:package dashboard)
+         (:set  dashboard-icon-type 'nerd-icons)
+         (dashboard-setup-startup-hook)
+         )
+
+  (setup doom-modeline
+         (:package doom-modeline)
+         (:hook-into after-init-hook)
+         (:hook size-indication-mode)
+         (:hook column-number-mode)
+         )
+#+end_src
 * Editor
 ** Meow
 #+begin_src emacs-lisp
