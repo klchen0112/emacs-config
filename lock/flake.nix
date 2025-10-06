@@ -7,10 +7,28 @@
       repo = "benchmark-init-el";
       type = "github";
     };
+    cape = {
+      flake = false;
+      owner = "minad";
+      repo = "cape";
+      type = "github";
+    };
     compat = {
       flake = false;
       owner = "emacs-compat";
       repo = "compat";
+      type = "github";
+    };
+    consult = {
+      flake = false;
+      owner = "minad";
+      repo = "consult";
+      type = "github";
+    };
+    corfu = {
+      flake = false;
+      owner = "minad";
+      repo = "corfu";
       type = "github";
     };
     dash = {
@@ -37,6 +55,18 @@
       repo = "ef-themes";
       type = "github";
     };
+    embark = {
+      flake = false;
+      owner = "oantolin";
+      repo = "embark";
+      type = "github";
+    };
+    embark-consult = {
+      flake = false;
+      owner = "oantolin";
+      repo = "embark";
+      type = "github";
+    };
     "f" = {
       flake = false;
       owner = "rejeep";
@@ -48,6 +78,12 @@
       owner = "koral";
       repo = "gcmh";
       type = "gitlab";
+    };
+    marginalia = {
+      flake = false;
+      owner = "minad";
+      repo = "marginalia";
+      type = "github";
     };
     meow = {
       flake = false;
@@ -73,6 +109,24 @@
       repo = "nerd-icons.el";
       type = "github";
     };
+    nerd-icons-completion = {
+      flake = false;
+      owner = "rainstormstudio";
+      repo = "nerd-icons-completion";
+      type = "github";
+    };
+    nerd-icons-corfu = {
+      flake = false;
+      owner = "LuigiPiucco";
+      repo = "nerd-icons-corfu";
+      type = "github";
+    };
+    orderless = {
+      flake = false;
+      owner = "oantolin";
+      repo = "orderless";
+      type = "github";
+    };
     "s" = {
       flake = false;
       owner = "magnars";
@@ -94,6 +148,36 @@
       flake = false;
       owner = "laishulu";
       repo = "emacs-smart-input-source";
+      type = "github";
+    };
+    tempel = {
+      flake = false;
+      owner = "minad";
+      repo = "tempel";
+      type = "github";
+    };
+    tempel-collection = {
+      flake = false;
+      owner = "Crandel";
+      repo = "tempel-collection";
+      type = "github";
+    };
+    treesit-fold = {
+      flake = false;
+      owner = "emacs-tree-sitter";
+      repo = "treesit-fold";
+      type = "github";
+    };
+    vertico = {
+      flake = false;
+      owner = "minad";
+      repo = "vertico";
+      type = "github";
+    };
+    which-key = {
+      flake = false;
+      owner = "justbur";
+      repo = "emacs-which-key";
       type = "github";
     };
   };

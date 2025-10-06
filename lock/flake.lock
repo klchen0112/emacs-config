@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "cape": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758383884,
+        "narHash": "sha256-fd3JlridszlEMir0e5hNG1F0D8C0KZGJNUh5isPzICs=",
+        "owner": "minad",
+        "repo": "cape",
+        "rev": "a9b78ac918df991716de3f84a95db91bb4df44b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "cape",
+        "type": "github"
+      }
+    },
     "compat": {
       "flake": false,
       "locked": {
@@ -29,6 +45,38 @@
       "original": {
         "owner": "emacs-compat",
         "repo": "compat",
+        "type": "github"
+      }
+    },
+    "consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1759747055,
+        "narHash": "sha256-KN6AVYDiJs0bbmEg/ytpKhNI0UEMWPPIm6uGDVyVMRU=",
+        "owner": "minad",
+        "repo": "consult",
+        "rev": "ce965a04223336665fa82df797455b7317181fc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "consult",
+        "type": "github"
+      }
+    },
+    "corfu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758631835,
+        "narHash": "sha256-3yB6hGLOlom0q0DoJN9VW8fimyi+eztabMlDO2TslOY=",
+        "owner": "minad",
+        "repo": "corfu",
+        "rev": "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "corfu",
         "type": "github"
       }
     },
@@ -96,6 +144,38 @@
         "type": "github"
       }
     },
+    "embark": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756129933,
+        "narHash": "sha256-bIueN2Z72uAtPdDTHtg3H+ZPX3to3fxLEsTiO25hKOo=",
+        "owner": "oantolin",
+        "repo": "embark",
+        "rev": "1371a1e33e3a3d96557beb28dccf1fa762f6ae22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "embark",
+        "type": "github"
+      }
+    },
+    "embark-consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756129933,
+        "narHash": "sha256-bIueN2Z72uAtPdDTHtg3H+ZPX3to3fxLEsTiO25hKOo=",
+        "owner": "oantolin",
+        "repo": "embark",
+        "rev": "1371a1e33e3a3d96557beb28dccf1fa762f6ae22",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "embark",
+        "type": "github"
+      }
+    },
     "f": {
       "flake": false,
       "locked": {
@@ -126,6 +206,22 @@
         "owner": "koral",
         "repo": "gcmh",
         "type": "gitlab"
+      }
+    },
+    "marginalia": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1759749995,
+        "narHash": "sha256-gjSxjtox8EppgzJ4hk2IiWA+1iDFfbkVa3GO4EMmjRU=",
+        "owner": "minad",
+        "repo": "marginalia",
+        "rev": "18d2d02cdb6689d7d08cd6c41b497117eeeba728",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "marginalia",
+        "type": "github"
       }
     },
     "meow": {
@@ -192,24 +288,86 @@
         "type": "github"
       }
     },
+    "nerd-icons-completion": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758810034,
+        "narHash": "sha256-LrdbMMcFQP00NEkxL5uuRCf6Z0AjbAXCs2PXAnMw4yI=",
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons-completion",
+        "rev": "63a6b3f1eb98bb381c86a1658ac401c8967079b8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rainstormstudio",
+        "repo": "nerd-icons-completion",
+        "type": "github"
+      }
+    },
+    "nerd-icons-corfu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1753803866,
+        "narHash": "sha256-QayHcSE786PcvJ+I6Yx86awqqn7D6rJ7sRBnjnkh1ww=",
+        "owner": "LuigiPiucco",
+        "repo": "nerd-icons-corfu",
+        "rev": "f821e953b1a3dc9b381bc53486aabf366bf11cb1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LuigiPiucco",
+        "repo": "nerd-icons-corfu",
+        "type": "github"
+      }
+    },
+    "orderless": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758548650,
+        "narHash": "sha256-psI93/dgYbiowni0IIGJtfSIcsh9GidAZdRMgIMIoxE=",
+        "owner": "oantolin",
+        "repo": "orderless",
+        "rev": "9cf1c90e2501566ceba59f3220b4630995004efd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oantolin",
+        "repo": "orderless",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "benchmark-init": "benchmark-init",
+        "cape": "cape",
         "compat": "compat",
+        "consult": "consult",
+        "corfu": "corfu",
         "dash": "dash",
         "dashboard": "dashboard",
         "doom-modeline": "doom-modeline",
         "ef-themes": "ef-themes",
+        "embark": "embark",
+        "embark-consult": "embark-consult",
         "f": "f",
         "gcmh": "gcmh",
+        "marginalia": "marginalia",
         "meow": "meow",
         "meow-tree-sitter": "meow-tree-sitter",
         "modus-themes": "modus-themes",
         "nerd-icons": "nerd-icons",
+        "nerd-icons-completion": "nerd-icons-completion",
+        "nerd-icons-corfu": "nerd-icons-corfu",
+        "orderless": "orderless",
         "s": "s",
         "setup": "setup",
         "shrink-path": "shrink-path",
-        "sis": "sis"
+        "sis": "sis",
+        "tempel": "tempel",
+        "tempel-collection": "tempel-collection",
+        "treesit-fold": "treesit-fold",
+        "vertico": "vertico",
+        "which-key": "which-key"
       }
     },
     "s": {
@@ -273,6 +431,86 @@
       "original": {
         "owner": "laishulu",
         "repo": "emacs-smart-input-source",
+        "type": "github"
+      }
+    },
+    "tempel": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758358114,
+        "narHash": "sha256-6+a2uZclsMi64ATu0xsiP6n5Y+5YYrmlW5lEVe+KLHE=",
+        "owner": "minad",
+        "repo": "tempel",
+        "rev": "79e0538f7c273a1ae73ec3f8c77563e38ed31e84",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "tempel",
+        "type": "github"
+      }
+    },
+    "tempel-collection": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1744301236,
+        "narHash": "sha256-1D40+Xn98w1rBfpwWrKFdzux7IBSNVooilTsIGAuSUA=",
+        "owner": "Crandel",
+        "repo": "tempel-collection",
+        "rev": "5cb6bc6b5856c70806ff6b2f952814ff702137c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Crandel",
+        "repo": "tempel-collection",
+        "type": "github"
+      }
+    },
+    "treesit-fold": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1757576223,
+        "narHash": "sha256-sO990vVAVzX/x3myuEGfymz/AG4Is5ob2/tQORToIxQ=",
+        "owner": "emacs-tree-sitter",
+        "repo": "treesit-fold",
+        "rev": "b44cdf3a15af1cff0d886a96637b89046b5aeac7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacs-tree-sitter",
+        "repo": "treesit-fold",
+        "type": "github"
+      }
+    },
+    "vertico": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1757454050,
+        "narHash": "sha256-ZbEzNtKRWFpiqMe876wiI4/kmP6MHNAoGD7skvvvM4M=",
+        "owner": "minad",
+        "repo": "vertico",
+        "rev": "4a11453e9de3d92b566bf0aa032da96b5b2e6770",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "vertico",
+        "type": "github"
+      }
+    },
+    "which-key": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1719328933,
+        "narHash": "sha256-fE445u1OSi8M4eucShxZL89BaXqsVZhlWqS+lSGjrSI=",
+        "owner": "justbur",
+        "repo": "emacs-which-key",
+        "rev": "38d4308d1143b61e4004b6e7a940686784e51500",
+        "type": "github"
+      },
+      "original": {
+        "owner": "justbur",
+        "repo": "emacs-which-key",
         "type": "github"
       }
     }

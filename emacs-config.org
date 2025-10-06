@@ -71,7 +71,7 @@ Both commands create a temporary directory which will be used as ~user-emacs-dir
 There temporary directory will be cleaned up when Emacs exits.
 * Constants
 #+begin_src emacs-lisp
-  ;;; init.el --- init.files -*- lexical-binding: t -*-
+  ;;; init.el --- default file -*- lexical-binding: t; -*-
   ;; 判断操作系统类型
   (defconst IS-MAC (eq system-type 'darwin))
   (defconst IS-LINUX (eq system-type 'gnu/linux))
@@ -242,7 +242,6 @@ the Garbage Collector Magic Hack
 #+begin_src emacs-lisp
   (setup nerd-icons
          (:package nerd-icons)
-         (:defer 1)
   )
 #+end_src
 *** Modeline and dashboard
@@ -287,7 +286,6 @@ the Garbage Collector Magic Hack
 ** Treesit 
 #+begin_src emacs-lisp
   (setup treesit
-         (:defer 1)
          (:only-if (fboundp 'treesit-available-p))
          (:also-load treesit-fold)
          )
@@ -367,6 +365,7 @@ the Garbage Collector Magic Hack
 
   (setup nerd-icons-completion
          (:package nerd-icons-completion)
+         (:also-load nerd-icons)
          (:when-loaded
   	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
          )
@@ -387,5 +386,73 @@ the Garbage Collector Magic Hack
   		   (:hook consult-preview-at-point-mode))
          )
 #+end_src
-** snippest
+***  Corfu
+#+begin_src emacs-lisp
+  (setup corfu
+         (:package corfu)
+         (:with-mode global-corfu-mode
+  		   (:hook-into after-init-hook))
+         ;; load features
+         (:also-load nerd-icons-corfu)
+         (:with-feature corfu-popupinfo
+  		      (:set corfu-popupinfo-delay '(0.5 . 1.0))
+  		      (:hook-into corfu-mode-hook))
+         (:with-feature corfu-history
+  		      (:hook-into corfu-mode-hook)
+  		      )
+         (:set
+  	corfu-auto t
+  	corfu-atuo-refix 2
+  	corfu-cycle t
+  	corfu-preselect 'prompt
+  	corfu-count 16
+  	corfu-max-width 120
+  	corfu-on-exact-match nil
+  	corfu-quit-at-boundary     'separator
+  	tab-always-indent 'complete))
 
+  (setup nerd-icons-corfu
+         (:package nerd-icons-corfu)
+         (:also-load nerd-icons)
+         )
+
+  (setup cape
+         (:package cape)
+         (add-hook 'completion-at-point-functions #'cape-dabbrev)
+         (add-hook 'completion-at-point-functions #'cape-file)
+         (add-hook 'completion-at-point-functions #'cape-elisp-block)
+         )
+#+end_src
+*** snippest
+
+#+begin_src emacs-lisp
+
+  (setup tempel
+         (:package tempel)
+         (:also-load tempel-collection)
+         (:set tempel-trigger-prefix "<")
+
+
+         ;; Setup completion at point
+         (defun tempel-setup-capf ()
+  	 ;; Add the Tempel Capf to `completion-at-point-functions'.
+  	 ;; `tempel-expand' only triggers on exact matches. Alternatively use
+  	 ;; `tempel-complete' if you want to see all matches, but then you
+  	 ;; should also configure `tempel-trigger-prefix', such that Tempel
+  	 ;; does not trigger too often when you don't expect it. NOTE: We add
+  	 ;; `tempel-expand' *before* the main programming mode Capf, such
+  	 ;; that it will be tried first.
+  	 (setq-local completion-at-point-functions
+  		     (cons #'tempel-expand
+  			   completion-at-point-functions)))
+
+         (add-hook 'conf-mode-hook 'tempel-setup-capf)
+         (add-hook 'prog-mode-hook 'tempel-setup-capf)
+         (add-hook 'text-mode-hook 'tempel-setup-capf)
+
+         )
+
+  (setup tempel-collection
+         (:package tempel-collection)
+         )
+#+end_src
