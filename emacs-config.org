@@ -334,7 +334,40 @@ the Garbage Collector Magic Hack
 * Programming
 
 ** eglot
+#+begin_src emacs-lisp
+  (setup eglot
+         (:package eglot)
+         (:also-load consult-eglot)
+         (:also-load consult-eglot-embark)
+         (:also-load eglot-booster)
+         (:set eglot-autoshutdown t)
+         (defun eglot-setup-eldoc ()
+  	 (setq-local eldoc-documentation-functions '(flymake-eldoc-function
+  						     eglot-signature-eldoc-function
+  						     eglot-hover-eldoc-function)))
+         (:hook 'eglot-setup-eldoc)
+         )
 
+  (setup consult-eglot
+         (:package consult-eglot)
+         )
+
+  (setup consult-eglot-embark
+         (:package consult-eglot-embark)
+         (with-eval-after-load 'eglot
+  	 (with-eval-after-load 'embark
+  	   (with-eval-after-load 'consult-eglot
+  	     (require 'consult-eglot-embark))))
+
+         (:when-loaded consult-eglot-embark-mode)
+         )
+
+  (setup eglot-booster
+         (:package eglot-booster)
+         (:set eglot-booster-io-only t)
+         (:when-loaded (eglot-booster-mode))
+         )
+#+end_src
 ** Completion
 *** Vertico, orderless and marginalia
 #+begin_src emacs-lisp
@@ -379,14 +412,13 @@ the Garbage Collector Magic Hack
   (setup embark-consult
          (:package embark-consult)
          (with-eval-after-load 'consult
-  	 (require 'embark-consult))
-         (with-eval-after-load 'embark
-  	 (require 'embark-consult))
+  	 (with-eval-after-load 'embark
+  	   (require 'embark-consult)))
          (:with-mode embark-collect-mode
   		   (:hook consult-preview-at-point-mode))
          )
 #+end_src
-***  Corfu
+*** Corfu
 #+begin_src emacs-lisp
   (setup corfu
          (:package corfu)
@@ -455,4 +487,18 @@ the Garbage Collector Magic Hack
   (setup tempel-collection
          (:package tempel-collection)
          )
+#+end_src
+
+** Env
+#+begin_src emacs-lisp
+  (setup envrc
+         (:package envrc)
+         (:with-mode envrc-global-mode
+  		   (:hook-into after-init-hook)))
+
+  (setup direnv
+         (:package direnv)
+         
+  )
+  	      
 #+end_src
