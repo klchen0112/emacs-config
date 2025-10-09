@@ -1,99 +1,68 @@
-# -*- org-id-link-to-org-use-id: nil; org-complete-tags-always-offer-all-agenda-tags: nil; eval: (org-make-toc-mode t) -*-
-* An Emacs Configuration
 :PROPERTIES:
-:TOC:      :include descendants :depth 1
+:header-args:emacs-lisp: :tangle init.el
 :END:
+#+TITLE: GNU Emacs Configuration
+#+AUTHOR: Terje Larsen
 
-[[https://akirak.cachix.org][file:https://img.shields.io/badge/cachix-akirak-blue.svg]]
+* Overview
+Terje's GNU Emacs configuration.
 
-This repository contains my Emacs configuration which is built using [[https://github.com/akirak/emacs-twist][emacs-twist]].
-I use home-manager to install the configuration.
+This configuration is making a lot of assumptions as it is built as a package with [[https://nix.dev][Nix]]. This means that all
+packages are expected to be on the =load-path= already and compatibility is only guaranteed with the GNU Emacs
+version that is part of this package. Currently GNU Emacs 31.0.50.
 
-Note: This configuration is currently built and tested only on Linux.
+The rough details:
+- themes :: [[file:lisp/readable-typo-theme.el][readable-typo-theme]] and [[file:lisp/readable-mono-theme.el][readable-mono-theme]]
+  - fonts :: [[https://github.com/be5invis/Iosevka][Iosevka Curly Slab, Iosevka Aile, Iosevka Etoile]]
+- buffer completion :: [[https://github.com/minad/corfu][corfu]], =completion-preview=
+- minibuffer completion :: [[https://github.com/minad/vertico][vertico]]
+- package configuration :: [[info:use-package#Top][use-package]]
+- key definitions :: =keymap=, =repeat=
+- code navigation :: [[info:emacs#Xref][xref]], [[https://github.com/jacktasia/dumb-jump][dumb-jump]], [[https://github.com/vspinu/imenu-anywhere][imenu-anywhere]]
+- syntax checker :: [[info:flymake#Top][flymake]]
+- persistence :: =desktop=
+- language server integration :: [[info:eglot#Top][eglot]]
+- structured editing :: [[https://github.com/AmaiKinono/puni][puni]]
 
-For technical details, check out [[https://deepwiki.com/akirak/emacs-config][DeepWiki]].
+Nix:
+- Package management via [[https://github.com/emacs-twist/twist.nix][twist.nix]]
+- GNU Emacs via [[https://github.com/nix-community/emacs-overlay][emacs-overlay]]
 
-:CONTENTS:
-- [[#trying-out][Trying out]]
-- [[#setupel][Setup.el]]
-- [[#performance][Performance]]
-- [[#supported-systems][Supported systems]]
-- [[#custom-conventions][Custom conventions]]
-- [[#macro-packages][Macro packages]]
-- [[#built-ins][Built-ins]]
-- [[#typography-settings][Typography settings]]
-- [[#org][Org]]
-- [[#treesit-based-major-modes][Treesit-based major modes]]
-- [[#working-with-specific-services][Working with specific services]]
-- [[#user-package-akirak-el][User package (akirak-*.el)]]
-- [[#packages][Packages]]
-- [[#software-package-management][Software package management]]
-- [[#workarounds][Workarounds]]
-- [[#post-init][Post init]]
-- [[#notes][Notes]]
-  - [[#how-to-develop-this-configuration][How to develop this configuration]]
-  - [[#tag-statistics][Tag statistics]]
-  - [[#web-development][Web development]]
-  - [[#syntax-support][Syntax support]]
-  - [[#readability][Readability]]
-  - [[#artificial-intelligence--llm][Artificial intelligence / LLM]]
-  - [[#extra-dependencies][Extra dependencies]]
-  - [[#links][Links]]
-  - [[#window-management][Window management]]
-  - [[#annotating][Annotating]]
-  - [[#natural-languages][Natural languages]]
-  - [[#grep][Grep]]
-  - [[#sh-emulation-keybindings][Sh-emulation keybindings]]
-- [[#also-see][Also see]]
-- [[#license][License]]
-:END:
-** Trying out
-:PROPERTIES:
-:ID:       3cc635d1-7bad-4d28-946e-e204b04aafaa
-:END:
-If you have Nix 2.9+ installed, you can try out the Emacs configuration without installing it.
-Note: Binary cache is only available for Linux x86-64 from Cachix. If you are using other platforms such as Mac, it may take several minutes to build the packages on your machine.
+** Screenshots
+*** org-mode
+#+CAPTION: org-mode light
+[[./media/org-mode-light.png]]
 
-There are two variants of the configuration.
-One is built with the pgtk version of Emacs, which runs on Wayland:
+#+CAPTION: org-mode dark
+[[./media/org-mode-dark.png]]
 
-#+begin_src bash
-   nix run github:akirak/emacs-config#emacs-pgtk-on-tmpdir
-#+end_src
+*** markdown-mode
+#+CAPTION: markdown-mode light
+[[./media/markdown-mode-light.png]]
 
-There is another version, an X11 variant, which is now discouraged:
+#+CAPTION: markdown-mode dark
+[[./media/markdown-mode-dark.png]]
 
-#+begin_src bash
-   nix run github:akirak/emacs-config#emacs-on-tmpdir
-#+end_src
+*** emacs-lisp-mode
+#+CAPTION: emacs-lisp-mode light
+[[./media/emacs-lisp-mode-light.png]]
 
-Both commands create a temporary directory which will be used as ~user-emacs-directory~ containing an init file.
-There temporary directory will be cleaned up when Emacs exits.
-* Customization
-** init
+#+CAPTION: emacs-lisp-mode dark
+[[./media/emacs-lisp-mode-dark.png]]
+* Initialization
+
 #+begin_src emacs-lisp
 ;;; init.el --- Initialization -*- lexical-binding: t; -*-
 #+end_src
-** Constants
-#+begin_src emacs-lisp
-    ;; 判断操作系统类型
-    (defconst IS-MAC (eq system-type 'darwin))
-    (defconst IS-LINUX (eq system-type 'gnu/linux))
-    (defconst IS-WINDOWS (eq system-type 'windows-nt))
-#+end_src
 
-#+begin_src emacs-lisp
-  (setq custom-file (expand-file-name "custom.el" temporary-file-directory))
-#+end_src
-* Setup.el
+** PaChoose a snippet: ckage configuration
+*** Setup
 :PROPERTIES:
 :SORTING_TYPE: a
 :END:
-[[https://git.sr.ht/~pkal/setup][Setup.el]] is an alternative to the famous [[https://github.com/jwiegley/use-package][use-package]].
-I am interested to see if it can reduce the amount of configuration code.
 
 #+begin_src emacs-lisp
-  (eval-when-compile
+(eval-when-compile
     (require 'setup)
     (require 'cl-lib)
 
@@ -123,7 +92,18 @@ I am interested to see if it can reduce the amount of configuration code.
       :repeatable t
       :shorthand cadr))
 #+end_src
-** :reformatters
+*** :defer
+
+#+begin_src emacs-lisp
+(eval-when-compile
+  (define-setup-macro :defer (seconds &optional func)
+    "Call a function at N seconds after init."
+    `(add-hook 'after-init-hook
+               (lambda ()
+                 (run-with-timer ,seconds nil
+                                 ,(or func (setup-get 'hook)))))))
+#+end_src
+*** :reformatters
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro
@@ -135,28 +115,27 @@ I am interested to see if it can reduce the amount of configuration code.
                   `(reformatter-define ,name ,@args))
                 entries)))))
 #+end_src
-** :defer
+*** :load-after
 #+begin_src emacs-lisp
-  (eval-when-compile
-    (define-setup-macro :defer (seconds &optional func)
-  		      "Call a function at N seconds after init."
-  		      `(add-hook 'after-init-hook
-  				 (lambda ()
-  				   (run-with-timer ,seconds nil
-  						   ,(or func (setup-get 'hook)))))))
+(eval-when-compile
+  (setup-define :load-after
+                (lambda (&rest features)
+                  (let ((body `(require ',(setup-get 'feature))))
+                    (dolist (feature (nreverse features))
+                      (setq body `(with-eval-after-load ',feature ,body)))
+                    body))
+                :documentation "Load the current feature after FEATURES."))
 #+end_src
-** :set
-
+*** :set
 #+begin_src emacs-lisp
-  (eval-when-compile
+(eval-when-compile
     (define-setup-macro
      :set (&rest args)
      "Set the default values of variables."
      `(setq-default ,@args)))
-#+end_src
 
-Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the startup performance.
-** :keymap-unset
+#+end_src
+*** :keymap-unset
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro
@@ -166,7 +145,7 @@ Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the sta
      :repeatable t
      `(keymap-unset ,(setup-get 'map) ,key)))
 #+end_src
-** :mode-repl
+*** :mode-repl
 #+begin_src emacs-lisp
   (eval-when-compile
     (define-setup-macro :mode-repl (repl-fn)
@@ -178,44 +157,200 @@ Generally speaking, ~setopt~ is preferred over ~setq~, but it slows down the sta
          (add-hook ',(setup-get 'hook)
                    #'repl-toggle-mode))))
 #+end_src
-** :nixpkgs
-#+begin_src emacs-lisp
+*** :nixpkgs
+#+begin_src emacs-lisp :yes
   (eval-when-compile
     (define-setup-macro :nixpkgs (&rest nixpkgs)
       "Fake installation of packages from NIXPKGS for executables."))
 #+end_src
-* Library
-*** kl
+** Data
+Provide a location where Emacs can store data and cache.
 #+begin_src emacs-lisp
-  (setup (:package kl))
-#+end_src
-* Performance                                             :packages:
-# Note: Some of these should be loaded as early as possible.
-*** benchmark-init                            :profiling:initialization:
-#+begin_quote
-Benchmarks for require and load calls
-[[https://github.com/dholm/benchmark-init-el]]
-#+end_quote
+(setup constants
+       (defvar data-dir
+         (if (getenv "XDG_DATA_HOME")
+             (concat (getenv "XDG_DATA_HOME") "/emacs/")
+           (expand-file-name "~/.local/share/emacs/"))
+         "Directory for data.")
 
+       (defvar cache-dir
+         (if (getenv "XDG_CACHE_HOME")
+             (concat (getenv "XDG_CACHE_HOME") "/emacs/")
+           (expand-file-name "~/.cache/emacs/"))
+         "Directory for cache.")
+
+       (defvar pictures-dir
+         (or (getenv "XDG_PICTURES_DIR")
+             (expand-file-name "~/Pictures/"))
+         "Directory for pictures.")
+       )
+#+end_src
+
+*** Customization
+Put custom definitions in a temporary file so it doesn't grow over time. This means all
+customization will disappear upon reboot and instead needs to be managed via the
+initialization file.
 #+begin_src emacs-lisp
-  (setup (:package benchmark-init)
+(setup custom-file
+   (setq custom-file (expand-file-name "custom.el" temporary-file-directory))
+)
+#+end_src
+
+** Performance
+No second pass of case-insensitive search over =auto-mode-alist=.
+#+begin_src emacs-lisp
+(setup auto-mode-case-fold
+(setq auto-mode-case-fold nil)
+)
+#+end_src
+
+Give up some bidirectional functionality for slightly faster re-display.
+#+begin_src emacs-lisp
+(setup bidirectional
+       (setq bidi-inhibit-bpa t)
+       (setq-default bidi-display-reordering 'left-to-right
+                     bidi-paragraph-direction 'left-to-right)
+       )
+#+end_src
+
+Defer processing font faces while scrolling and typing.
+#+begin_src emacs-lisp
+(setup jit
+(setq fast-but-imprecise-scrolling t)
+(setq jit-lock-defer-time 0)
+)
+#+end_src
+
+*** gcmh
+Adjust Garbage Collector threshold depending on activity and try to run garbage collection
+during idle instead.
+#+begin_src emacs-lisp
+(setup gcmh
+       (:package gcmh)
+       (:hook-into after-init-hook)
+       (:set
+        gcmh-idle-delay 5
+        gcmh-high-cons-threshold (* 16 1024 1024) ; 16MB
+        gcmh-verbose init-file-debug))
+#+end_src
+
+
+*** benchmark-init
+#+begin_src emacs-lisp
+  (setup benchmark-init
+         (:package benchmark-init)
          (:require benchmark-init)
          (:only-if init-file-debug
   		 (add-hook 'after-init-hook 'benchmark-init/deactivate))
          )
 #+end_src
-*** gcmh                                               :performance:
-#+begin_quote
-the Garbage Collector Magic Hack
-#+end_quote
 
+** Libraries
+*** nerd-icons
+Library for displaying icons. I am trying to use icons where possible.
 #+begin_src emacs-lisp
-  (setup (:package gcmh)
-    (:hook-into after-init-hook)
-    (:set gcmh-verbose init-file-debug
-          gcmh-high-cons-threshold (* 128 1024 1024)))
+(setup nerd-icons
+       (:package nerd-icons))
 #+end_src
-* Themes
+*** Treesit
+#+begin_src emacs-lisp
+  (setup treesit
+         (:only-if (fboundp 'treesit-available-p))
+         )
+
+#+end_src
+** Functions
+** Localization
+#+begin_src emacs-lisp
+(setup localization
+       (:set calendar-week-start-day 1)
+       )
+#+end_src
+
+** Shell
+Set shell to bash as fish is not compatible with all packages using the shell.
+#+begin_src emacs-lisp
+(setup shell
+(:set shell-file-name "bash")
+)
+#+end_src
+
+** Region
+Fix WSL/WSLg copy issue.
+#+begin_src emacs-lisp
+(setq select-active-regions nil)
+#+end_src
+
+** UX
+Disable bell (both visual and audible).
+#+begin_src emacs-lisp
+;; (setq ring-bell-function #'ignore)
+;; (setq visible-bell nil)
+#+end_src
+
+Use =y= / =n= instead of =yes= / =no.=
+#+begin_src emacs-lisp
+;; (setq confirm-kill-emacs #'y-or-n-p)
+;; (fset #'yes-or-no-p #'y-or-n-p)
+#+end_src
+
+Hide M-x commands which does not work in the current buffer.
+#+begin_src emacs-lisp
+;; (setq read-extended-command-predicate #'command-completion-default-include-p)
+#+end_src
+
+* Appearance
+** Fonts
+*** Size
+#+begin_src emacs-lisp
+;; (defvar init-line-spacing 0.25
+;;   "Spacing between lines.")
+
+;; (defvar init-default-font-height 105
+;;   "Default font height.")
+#+end_src
+
+*** Face
+#+begin_src emacs-lisp
+;; (defvar init-fixed-pitch-font "Iosevka Curly Slab"
+;;   "Font used for fixed-pitch faces.")
+
+;; (defvar init-variable-pitch-font "Iosevka Aile"
+;;   "Font used for variable-pitch faces.")
+
+;; (defvar init-serif-font "Iosevka Etoile"
+;;   "Font used for serif faces.")
+
+;; (defvar init-unicode-font "Noto Sans Mono"
+;;   "Fallback font used for unicode glyphs.")
+
+;; (defvar init-symbol-fonts '("Apple Symobols" "Apple Color Emoji" "Noto Color Emoji" "Liberation Mono" "Noto Sans Symbols2" "SegoUI Emoji" "FreeSerif" "Symbola" "Twitter")
+  ;; "Fonts used for symbol/emoji faces.")
+#+end_src
+
+Setup symbol fonts.
+#+begin_src emacs-lisp
+;; (dolist (font init-symbol-fonts)
+  ;; (set-fontset-font t 'symbol font nil 'append))
+#+end_src
+
+*** Line length
+#+begin_src emacs-lisp
+;; (setq-default fill-column 110)
+#+end_src
+
+*** Underline
+Underline line at descent position, not baseline position.
+#+begin_src emacs-lisp
+;; (setq x-underline-at-descent-line t)
+#+end_src
+
+** Theme
+Use a bar cursor by default.
+#+begin_src emacs-lisp
+;; (setq-default cursor-type 'bar)
+#+end_src
+*** ef-themes
 #+begin_src emacs-lisp
   (setup ef-themes
          (:package ef-themes)
@@ -228,7 +363,54 @@ the Garbage Collector Magic Hack
          (modus-themes-load-random)
          )
 #+end_src
-*** display-line-number
+
+** Layout
+*** Frame
+See [[info:elisp#Frame Layout][Frame Layout]] for details and terminology.
+- Add some padding around the whole window (=internal-border-width=) to provide some air.
+#+begin_src emacs-lisp
+;; (cl-pushnew '(internal-border-width . 16) default-frame-alist :test #'equal)
+#+end_src
+
+*** Fringe
+Setup fringes on both sides and display an indicator for buffer boundaries on the right
+side. Display fringes outside margins to have the [[Padding][padding]] on the inside.
+#+begin_src emacs-lisp
+;; (setq-default fringes-outside-margins t
+;;               left-fringe-width 8
+;;               right-fringe-width 8
+;;               indicate-buffer-boundaries 'right)
+#+end_src
+
+*** Padding
+Add margins inside windows to make text feel less crowded. Padding around the frame is
+configured via the =internal-border-width= in the [[Frame][Frame]] section.
+#+begin_src emacs-lisp
+;; (setq-default left-margin-width 1
+              ;; right-margin-width 1)
+#+end_src
+
+** Modeline
+#+begin_src emacs-lisp
+  (setup dashboard
+         (:package dashboard)
+         (:set  dashboard-icon-type 'nerd-icons)
+         (dashboard-setup-startup-hook)
+         )
+
+#+end_src
+
+** Dashboard
+#+begin_src emacs-lisp
+  (setup doom-modeline
+         (:package doom-modeline)
+         (:hook-into after-init-hook)
+         (:hook size-indication-mode)
+         (:hook column-number-mode)
+         )
+
+#+end_src
+** display-line-number
 #+begin_src emacs-lisp
   (setup display-fill-column-indicator (:hook-into prog-mode))
   (setup display-line-numbers (:hook-into prog-mode)
@@ -236,7 +418,7 @@ the Garbage Collector Magic Hack
   	     display-line-numbers-type 'relative))
 #+end_src
 
-*** Scroll
+** Scroll
 #+begin_src emacs-lisp
 
   (setup pixel-scroll
@@ -246,381 +428,95 @@ the Garbage Collector Magic Hack
   			      (:hook-into find-file-hook
   					  help-mode-hook))))
 #+end_src
-*** Font
+
+* Editor & Keybindings
+** Editor Config
 #+begin_src emacs-lisp
-  ;; Main typeface
-  (set-face-attribute 'default nil :family "M+1Code Nerd Font Propo" :height 160)
-
-  ;; Proportionately spaced typeface
-  (set-face-attribute 'variable-pitch nil :family "M+1Code Nerd Font Propo" :height 1.0)
-
-  ;; Monospaced typeface
-  (set-face-attribute 'fixed-pitch nil :family "M+1Code Nerd Font Propo" :height 1.0)
-
-  ;; symbol fonts
-  (set-fontset-font t 'symbol   (font-spec :family "Apple Symobols"     ))
-  (set-fontset-font t 'symbol   (font-spec :family "Apple Color Emoji"  ))
-  (set-fontset-font t 'symbol   (font-spec :family "Symbola"            ))
-  (set-fontset-font t 'symbol   (font-spec :family "Noto Color Emoji"   ))
-  (set-fontset-font t 'symbol   (font-spec :family "Liberation Mono"    ))
-  (set-fontset-font t 'symbol   (font-spec :family "Noto Sans Symbols2" ))
-  (set-fontset-font t 'symbol   (font-spec :family "Segoe UI Emoji"     ))
-  (set-fontset-font t 'symbol   (font-spec :family "FreeSerif"          ))
-  (set-fontset-font t 'symbol   (font-spec :family "Twitter Color Emoji"))
-  ;; i18n 
-  ;; East Asia: 你好, 早晨, こんにちは, 안녕하세요
-  (set-fontset-font t 'han      (font-spec :family "TsangerJinKai05"   ))
-  (set-fontset-font t 'kana      (font-spec :family "TsangerJinKai05"   ))
-  (set-fontset-font t 'hangul      (font-spec :family "TsangerJinKai05"   ))
-  (set-fontset-font t 'cjk-misc (font-spec :family "Noto Serif CJK SC" ))
-  ;; Cyrillic: Привет, Здравствуйте, Здраво, Здравейте
-  (set-fontset-font t 'cyrillic (font-spec :family "Noto Serif"         ))
+(setup editorconfig)
 #+end_src
+** Meow with treesitter
 
-**** Nerd-icons
-#+begin_src emacs-lisp
-  (setup nerd-icons
-         (:package nerd-icons)
-  )
-#+end_src
-*** Modeline and dashboard
-#+begin_src emacs-lisp
-  (setup dashboard
-         (:package dashboard)
-         (:set  dashboard-icon-type 'nerd-icons)
-         (dashboard-setup-startup-hook)
-         )
-
-  (setup doom-modeline
-         (:package doom-modeline)
-         (:hook-into after-init-hook)
-         (:hook size-indication-mode)
-         (:hook column-number-mode)
-         )
-#+end_src
-** Which-key
-#+begin_src emacs-lisp
-  (setup which-key
-         (:package which-key)
-         (:hook-into after-init-hook)
-         (:set which-key-idle-delay 0.3)
-         )
-#+end_src
-* Editor
-** Meow
 #+begin_src emacs-lisp
   (setup meow
          (:package meow)
-         (:also-load kl-meow)
-         (:also-load meow-tree-sitter)
+         (:also-load lib-meow)
          (:with-function meow-setup (:autoload-this))
          (meow-global-mode 1)
          (meow-setup)
          )
+ (setup lib-meow
+        (:package lib-meow))
+
   (setup meow-tree-sitter
          (:package meow-tree-sitter)
-         (:also-load treesit)
-         (:when-loaded (meow-tree-sitter-register-defaults)))
-#+end_src
-** Treesit 
-#+begin_src emacs-lisp
-  (setup treesit
-         (:only-if (fboundp 'treesit-available-p))
-         (:also-load treesit-fold)
+         (:load-after meow)
+         (:when-loaded (meow-tree-sitter-register-defaults)
          )
-  (setup treesit-fold
-         (:only-if (fboundp 'treesit-available-p))
-         (:package treesit-fold)
-         )
+        )
 #+end_src
-** Editor-config
+** Keybiding
+*** Which-key
 #+begin_src emacs-lisp
-  (setup editorconfig)
-#+end_src
-** Fmt
-#+begin_src emacs-lisp
-  (setup (:package reformatter)
-         (:reformatters
-  	;; If you use prettier, you need to install its executable separately.
-  	(prettier
-  	 :program "prettier"
-  	 :args (list (concat "--plugin-search-dir="
-                               (expand-file-name
-                                (locate-dominating-file default-directory "package.json")))
-                       "--stdin-filepath" (buffer-file-name)))
-  	(treefmt
-  	 :program "treefmt"
-  	 :args (list "--stdin" (buffer-file-name)))
-
-  	(yamlfmt
-  	 :program "yamlfmt"
-  	 :args (list "-"))
-
-  	(jq-format
-  	 :program "jq"
-  	 :args (list "."))
-
-  	(biome-format
-  	 :program
-  	 (cond
-  	  ((executable-find "bunx")
-  	   "bunx"))
-  	 :args (append (cond
-  			((executable-find "bunx")
-  			 nil))
-                         (list "@biomejs/biome" "format" (buffer-file-name)
-                               (concat "--stdin-file-path=" (buffer-file-name)))))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (setup (:package repl-toggle)
-         (:set rtog/fullscreen t))
-#+end_src
-* Inputmethod
-#+begin_src emacs-lisp
-  (setup sis
-         (:package sis)
-         (:only-if (or IS-MAC IS-LINUX))
-         (:set sis-ism-lazyman-config '(
-  				     "com.apple.keylayout.UnicodeHexInput"
-  				     "im.rime.inputmethod.Squirrel.Rime"
-  				     )
-  	     sis-global-cursor-color-mode t
-  	     sis-global-respect-mode t
-  	     sis-global-context-mode t
-  	     sis-global-inline-mode t
-  	     )
-         (add-hook 'meow-insert-exit-hook #'sis-set-english)
-         )
-
-;;  (setup rime
-;;         (:package rime)
-;;         (:defer 1)
-;;         (:set rime-user-data-dir (if IS-LINUX "~/.local/share/fcitx5/rime"
-;;  				  "~/Library/Rime")
-;;
-;;  	     rime-show-candidate 'posframe
-;;  	     rime-show-preedit 'inline
-;;  	     default-input-method "rime"
-;;  	     rime-inline-ascii-trigger 'shift-r
-;;  	     rime-translate-keybindings '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
-;;         )
+(setup which-key
+       (:package which-key)
+       (:hook-into after-init-hook)
+       (:set which-key-idle-delay 0.3)
+       )
 
 #+end_src
-* Env & shell
-* Writing
-** Org
+** Undo
+Increase undo limit.
 #+begin_src emacs-lisp
-  (setup org
-         (:package org)
-         (:set org-directory "~/org")
-         (:with-feature org-agenda
-  		      (:set
-  		       ;; 时间前导0
-  		       org-agenda-time-leading-zero t
-  		       ;; 默认显示区间
-  		       org-agenda-span 7
-  		       ;; agenda view 默认从周一开始显示
-  		       org-agenda-start-on-weekday 1)
-  		      )
-         )
-
-  (setup org
-         (:also-load org-download))
-  
-  (setup org-download
-         (:package org-download)
-         (:set   org-download-method 'directory
-  	       org-download-image-dir "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/org-attach"
-  	       org-download-heading-lvl 'nil)
-         )
-
-  (setup org
-         (:also-load org-modern))
-
-  (setup org-modern
-         (:package org-modern)
-         (:hook-into org-mode-hook)
-         (:set
-  	;; Edit settings
-  	org-auto-align-tags nil
-  	org-tags-column 0
-  	org-catch-invisible-edits 'show-and-error
-  	org-special-ctrl-a/e t
-  	org-insert-heading-respect-content t
-
-  	;; Org styling, hide markup etc.
-  	org-hide-emphasis-markers t
-  	org-pretty-entities t
-  	org-agenda-tags-column 0
-  	org-ellipsis "…")
-         (:when-loaded
-  	(modify-all-frames-parameters
-  	 '((right-divider-width . 40)
-  	   (internal-border-width . 40)))
-  	(dolist (face '(window-divider
-  			window-divider-first-pixel
-  			window-divider-last-pixel))
-  	  (face-spec-reset-face face)
-  	  (set-face-foreground face (face-attribute 'default :background)))
-  	(set-face-background 'fringe (face-attribute 'default :background))
-  	))
+(setup undo-fu
+       (:package undo-fu)
+       (:set undo-limit 1000000
+             undo-strong-limit (* 2 undo-limit))
+       )
 #+end_src
-** Org-roam
+
+** Synatax & Checker
+* Completion
+Enable indentation and completion with the =TAB= key.
 #+begin_src emacs-lisp
-  (setup org
-         (:also-load org-roam))
-
-  (setup org-roam
-         (:package org-roam)
-         (:set org-roam-directory (file-truename org-directory))
-         (:when-loaded  (org-roam-db-autosync-mode)
-  		      (setq org-id-link-to-org-use-id t)
-  		      (setq org-roam-completion-everywhere t))
-         )
-
-  (setup org-roam
-         (:also-load org-roam-ui))
-  (setup org-roam-ui
-         (:package org-roam-ui)
-         (:when-loaded
-  	(setq org-roam-ui-sync-theme t
-                org-roam-ui-follow t
-  	      org-roam-ui-update-on-save t
-                org-roam-ui-open-on-start nil
-  	      )
-  	))
-
-  (setup org-roam
-         (:also-load org-roam-timestamps))
-  (setup org-roam-timestamps
-         (:package org-roam-timestamps)
-         (:hook-into org-roam-mode-hook)
-         (:set org-roam-timestamps-parent-file t))
-
-
-  (setup org-roam
-         (:also-load org-transclusion))
-  (setup org-transclusion
-         (:package org-transclusion)
-         (:hook-into org-roam-mode-hook) )
-
-  (setup org-roam
-         (:also-load consult-org-roam))
-  (setup consult-org-roam
-         (:package consult-org-roam)
-         (:set
-  	;; Use `ripgrep' for searching with `consult-org-roam-search'
-  	consult-org-roam-grep-func #'consult-ripgrep
-  	;; Configure a custom narrow key for `consult-buffer'
-  	consult-org-roam-buffer-narrow-key ?r
-  	;; Display org-roam buffers right after non-org-roam buffers
-  	;; in consult-buffer (and not down at the bottom)
-  	consult-org-roam-buffer-after-buffers t
-  	)
-         (with-eval-after-load 'consult))
+;; (setq tab-always-indent 'complete)
 #+end_src
-* Programming
-** eglot
+
+Cycle with the =TAB= key if there are only few candidates.
 #+begin_src emacs-lisp
-  (setup eglot
-         (:package eglot)
-         (:also-load consult-eglot)
-         (:also-load consult-eglot-embark)
-         (:also-load eglot-booster)
-         (:set eglot-autoshutdown t)
-         (defun eglot-setup-eldoc ()
-  	 (setq-local eldoc-documentation-functions '(flymake-eldoc-function
-  						     eglot-signature-eldoc-function
-  						     eglot-hover-eldoc-function)))
-         (:hook 'eglot-setup-eldoc)
-         )
-
-  (setup consult-eglot
-         (:package consult-eglot)
-         )
-
-  (setup consult-eglot-embark
-         (:package consult-eglot-embark)
-         (with-eval-after-load 'eglot
-  	 (with-eval-after-load 'embark
-  	   (with-eval-after-load 'consult-eglot
-  	     (require 'consult-eglot-embark))))
-
-         (:when-loaded consult-eglot-embark-mode)
-         )
-
-  (setup eglot-booster
-         (:package eglot-booster)
-         (:set eglot-booster-io-only t)
-         (:when-loaded (eglot-booster-mode))
-         )
+;; (setq completion-cycle-threshold 3)
 #+end_src
-** Completion
-*** Vertico, orderless and marginalia
+
+
+** Style
+*** orderless
+Space-separated matching components matching in any order.
 #+begin_src emacs-lisp
-  (setup orderless
-         (:package orderless)
-         (:set
-  	completion-styles '(orderless basic)
-  	completion-category-overrides '((file (styles partial-completion)))
-  	completion-category-defaults nil ;; Disable defaults, use our settings
-  	completion-pcm-leading-wildcard t
-  	orderless-component-separator #'orderless-escapable-split-on-space
-  	)
-         )
-
-  (setup vertico
-         (:package vertico)
-         (:also-load orderless)
-         (:also-load marginalia)
-         (:hook-into after-init-hook)
-         (:set vertico-cycle t)
-         )
-
-  (setup marginalia
-         (:package marginalia)
-         (:also-load nerd-icons-completion)
-         (:hook-into after-init-hook))
-
-
-  (setup nerd-icons-completion
-         (:package nerd-icons-completion)
-         (:also-load nerd-icons)
-         (:when-loaded
-  	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
-         )
+(setup orderless
+       (:package orderless)
+       (:set
+        completion-styles '(substring orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
-*** Embark and consult
+
+** Buffer
+*** corfu
+Completion Overlay Region FUnction.
 #+begin_src emacs-lisp
-  (setup embark
-         (:package embark))
-  (setup consult
-         (:package consult))
-  (setup embark-consult
-         (:package embark-consult)
-         (with-eval-after-load 'consult
-  	 (with-eval-after-load 'embark
-  	   (require 'embark-consult)))
-         (:with-mode embark-collect-mode
-  		   (:hook consult-preview-at-point-mode))
-         )
-#+end_src
-*** Corfu
-#+begin_src emacs-lisp
-  (setup corfu
-         (:package corfu)
-         (:with-mode global-corfu-mode
+
+(setup corfu
+       (:package corfu)
+       (:with-mode global-corfu-mode
   		   (:hook-into after-init-hook))
-         ;; load features
-         (:also-load nerd-icons-corfu)
-         (:with-feature corfu-popupinfo
+       ;; load features
+       (:also-load nerd-icons-corfu)
+       (:with-feature corfu-popupinfo
   		      (:set corfu-popupinfo-delay '(0.5 . 1.0))
   		      (:hook-into corfu-mode-hook))
-         (:with-feature corfu-history
+       (:with-feature corfu-history
   		      (:hook-into corfu-mode-hook)
   		      )
-         (:set
+       (:set
   	corfu-auto t
   	corfu-atuo-refix 2
   	corfu-cycle t
@@ -631,30 +527,37 @@ the Garbage Collector Magic Hack
   	corfu-quit-at-boundary     'separator
   	tab-always-indent 'complete))
 
-  (setup nerd-icons-corfu
-         (:package nerd-icons-corfu)
-         (:also-load nerd-icons)
-         )
+(setup nerd-icons-corfu
+       (:package nerd-icons-corfu)
+       (:also-load nerd-icons)
+       )
 
-  (setup cape
-         (:package cape)
-         (add-hook 'completion-at-point-functions #'cape-dabbrev)
-         (add-hook 'completion-at-point-functions #'cape-file)
-         (add-hook 'completion-at-point-functions #'cape-elisp-block)
-         )
+
 #+end_src
-*** snippest
 
+** Minibuffer
+*** vertico
+Vertical interactive completion UI.
 #+begin_src emacs-lisp
+  (setup vertico
+         (:package vertico)
+         (:also-load orderless)
+         (:also-load marginalia)
+         (:hook-into after-init-hook)
+         (:set vertico-cycle t)
+         )
 
-  (setup tempel
-         (:package tempel)
-         (:also-load tempel-collection)
-         (:set tempel-trigger-prefix "<")
 
+#+end_src
 
-         ;; Setup completion at point
-         (defun tempel-setup-capf ()
+** snippets
+#+begin_src emacs-lisp
+(setup tempel
+       (:package tempel)
+       (:also-load tempel-collection)
+       (:set tempel-trigger-prefix "<")
+       ;; Setup completion at point
+       (defun tempel-setup-capf ()
   	 ;; Add the Tempel Capf to `completion-at-point-functions'.
   	 ;; `tempel-expand' only triggers on exact matches. Alternatively use
   	 ;; `tempel-complete' if you want to see all matches, but then you
@@ -665,81 +568,347 @@ the Garbage Collector Magic Hack
   	 (setq-local completion-at-point-functions
   		     (cons #'tempel-expand
   			   completion-at-point-functions)))
+       (add-hook 'conf-mode-hook 'tempel-setup-capf)
+       (add-hook 'prog-mode-hook 'tempel-setup-capf)
+       (add-hook 'text-mode-hook 'tempel-setup-capf)
+       )
 
-         (add-hook 'conf-mode-hook 'tempel-setup-capf)
-         (add-hook 'prog-mode-hook 'tempel-setup-capf)
-         (add-hook 'text-mode-hook 'tempel-setup-capf)
+(setup tempel-collection
+       (:package tempel-collection)
+       )
 
-         )
+#+end_src
+** Extensions
 
-  (setup tempel-collection
-         (:package tempel-collection)
+*** nerd-icons-completion
+#+begin_src emacs-lisp
+(setup nerd-icons-completion
+       (:package nerd-icons-completion)
+       (:also-load nerd-icons)
+       (:when-loaded
+  	(add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+       )
+
+#+end_src
+
+*** cape
+Completion At Point Extensions.
+#+begin_src emacs-lisp
+(setup cape
+       (:package cape)
+       (:when-loaded
+       (add-hook 'completion-at-point-functions #'cape-dabbrev)
+       (add-hook 'completion-at-point-functions #'cape-file)
+       (add-hook 'completion-at-point-functions #'cape-elisp-block)
+       )
+       )
+#+end_src
+
+*** consult
+Commands compatible with ~completing-read~.
+#+begin_src emacs-lisp
+(setup consult
+       (:package consult)
+       (:set consult-preview-key "M-RET"))
+
+(setup consult-xref
+(:when-loaded
+       (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
+       (:load-after consult xref)
+       )
+#+end_src
+*** embark
+#+begin_src emacs-lisp
+  (setup embark
+         (:package embark))
+  (setup embark-consult
+         (:package embark-consult)
+         (:load-after embark consult)
+         (:with-mode embark-collect-mode
+  		   (:hook consult-preview-at-point-mode))
          )
 #+end_src
-* tools
-** Version Control (Git)
+
+
+*** dabbrev
+#+begin_src emacs-lisp
+(setup dabbrev
+       (:set
+        dabbrev-case-replace nil
+        dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+#+end_src
+
+
+*** marginalia
+Annotations for completion candidates.
+#+begin_src emacs-lisp
+  (setup marginalia
+         (:package marginalia)
+         (:also-load nerd-icons-completion)
+         (:hook-into after-init-hook))
+#+end_src
+
+* Navigation
+
+** Dired
 #+begin_src emacs-lisp
 
-  (setup magit
-         (:package magit)
-         (:also-load forge)
-         )
 
-  (setup forge
-         (:package forge))
+(setup dirvish
+  (:load-after dired)
+       (:package dirvish)
+       )
 
-  (setup diff-hl
-         (:package diff-hl))
+(setup diredfl
+        (:load-after dired)
+       (:package diredfl)
+       )
 
-  (setup smerge-mode)
 #+end_src
-** Env
+
+*** Icons
 #+begin_src emacs-lisp
-  (setup envrc
-         (:package envrc)
-         (:with-mode envrc-global-mode
-  		   (:hook-into after-init-hook)))
 
-  (setup direnv
-         (:package direnv)
-         
-  )
-  	      
+  (setup nerd-icons-dired
+    (:package nerd-icons-dired)
+    (:load-after dired)
+         (:hook-into dired-mode-hook))
+
 #+end_src
+
+*** Git
+#+begin_src emacs-lisp :tangle no
+(setup dired-git-info
+    (:package dired-git-info)
+    )
+#+end_src
+
+** Isearch
+#+begin_src emacs-lisp
+(setup isearch
+       (:set isearch-lazy-count t))
+#+end_src
+
+** Occur
+#+begin_src emacs-lisp
+(setup replace)
+
+(setup noccur)
+#+end_src
+
+
+
 ** Project
 #+begin_src emacs-lisp
   (setup projectile
          (:package projectile)
          (projectile-mode +1)
          )
+
 #+end_src
-** File
+
+* Development
+Reduce scroll margin.
 #+begin_src emacs-lisp
-  (setup dired
-         (:also-load nerd-icons-dired))
+(defun prog-scroll-margin-setup ()
+  "Setup `scroll-margin' for `prog-mode'."
+  (setq-local scroll-margin 3))
+(add-hook 'prog-mode-hook #'prog-scroll-margin-setup)
+#+end_src
 
-  (setup nerd-icons-dired
-    (:package nerd-icons-dired)
-         (:hook-into dired-mode-hook))
+** Compilation
+#+begin_src emacs-lisp
+#+end_src
 
-  (setup dired
-         (:also-load dirvish))
-  (setup dirvish
-         (:package dirvish)
-         )
+** Containers
+*** Docker
+#+begin_src emacs-lisp
+(setup docker
+       (:package docker))
+#+end_src
 
-  (setup dired
-         (:also-load diredfl))
-  (setup diredfl
-         (:package diredfl)
+**** Files
+Support for Docker related files.
+#+begin_src emacs-lisp
+(setup dockerfile-ts-mode
+  (:match-file
+  "Dockerfile\\'"
+  "\\.dockerfile\\'")
+#+end_src
+
+*** Kubernetes
+#+begin_src emacs-lisp
+(setup kubernetes (:package kubernetes))
+#+end_src
+
+** Coverage
+#+begin_src emacs-lisp
+
+#+end_src
+
+** Docs
+*** DevDocs
+Lookup documentation via DevDocs.
+#+begin_src emacs-lisp
+(setup devdocs
+       (:package devdocs))
+#+end_src
+
+** Folding
+Code folding with treesit-fold
+#+begin_src emacs-lisp
+(setup treesit-fold
+       (:only-if (fboundp 'treesit-available-p))
+       (:package treesit-fold)
+       )
+
+#+end_src
+
+** Formatting
+
+
+#+begin_src emacs-lisp
+(setup reformatter
+       (:package reformatter)
+    ;;   (:reformatters
+  	;; If you use prettier, you need to install its executable separately.
+  	;;(prettier
+  	;; :program "prettier"
+  	;; :args (list (concat "--plugin-search-dir="
+    ;;                         (expand-file-name
+    ;;                          (locate-dominating-file default-directory "package.json")))
+    ;;                 "--stdin-filepath" (buffer-file-name)))
+  	;;(treefmt
+  	;; :program "treefmt"
+  	;; :args (list "--stdin" (buffer-file-name)))
+
+  	;;(yamlfmt
+  	;; :program "yamlfmt"
+  	;; :args (list "-"))
+
+  	;;(jq-format
+  	;; :program "jq"
+  	;; :args (list "."))
+
+  	;;(biome-format
+  	;; :program
+  	;; (cond
+  	;;  ((executable-find "bunx")
+  	;;   "bunx"))
+  	;; :args (append (cond
+  	;;		((executable-find "bunx")
+  	;;		 nil))
+    ;;                   (list "@biomejs/biome" "format" (buffer-file-name)
+    ;;                         (concat "--stdin-file-path=" (buffer-file-name))))))
     )
 
 #+end_src
-** Terminal
+
+** REPL
+
+*** repl-toggle
 #+begin_src emacs-lisp
-  (setup eat (:package eat))
+(setup repl-toggle
+       (:package repl-toggle)
+  (:set rtog/goto-buffer-fun 'pop-to-buffer)
+  (:set rtog/mode-repl-alist
+        '((emacs-lisp-mode . ielm)
+          (org-mode . ielm))))
+#+end_src
+
+
+** Syntax checker
+Silence next/previous error, by default it produces a message every time.
+#+begin_src emacs-lisp
+(advice-add 'next-error :around #'quiet-function-advice)
+(advice-add 'previous-error :around #'quiet-function-advice)
+#+end_src
+
+*** flymake
+Connect flymake to =next-error-function= and add some navigation bindings. Disable the
+legacy diagnostic functions as some of them have bugs and cause instability (mainly the
+Haskell one).
+#+begin_src emacs-lisp
+(setup flymake
+  (:package flymake)
+  (:with-feature flymake-proc)
+  )
+
+#+end_src
+
+** Version control
+#+begin_src emacs-lisp
+(setq vc-follow-symlinks t)
+(setq vc-make-backup-files nil)
+#+end_src
+
+*** diff
+#+begin_src emacs-lisp
+(setup diff
+  (:set diff-font-lock-prettify t))
+#+end_src
+
+*** diff-hl
+Diff indicators in fringe
+#+begin_src emacs-lisp
+(setup diff-hl
+       (:package diff-hl))
+#+end_src
+
+*** magit
+Enhanced git related views and commands.
+#+begin_src emacs-lisp
+(setup magit
+       (:package magit)
+       )
+
+;;(setup forge
+;;      (:package forge))
+#+end_src
+
+** Env
+
+#+begin_src emacs-lisp
+(setup envrc
+       (:package envrc)
+       (:with-mode envrc-global-mode
+                   (:hook-into after-init-hook))
+       )
+#+end_src
+** LSP
+*** eglot
+Generic Language Server Protocol integration via ~eglot~.
+#+begin_src emacs-lisp
+(setup eglot
+       (:package eglot)
+       (:set
+        eglot-autoshutdown t
+        eglot-code-action-indications nil
+        eglot-confirm-server-edits nil
+        eglot-sync-connect nil)
+       )
+)
+
+(setup consult-eglot
+       (:package consult-eglot)
+       (:load-after eglot)
+    (:with-feature consult-eglot-embark
+    (:when-loaded
+         (consult-eglot-embark-mode))
+
+       ))
+
+(setup eglot-booster
+
+       (:package eglot-booster)
+       (:set eglot-booster-io-only t)
+       (:when-loaded (:hook-into eglot-mode-hook))
+       )
+
 #+end_src
 ** Debugger
+**** Dape
 #+begin_src emacs-lisp
   (setup dape
          (:package dape)
@@ -752,60 +921,283 @@ the Garbage Collector Magic Hack
   	(add-hook dape-compile-hook  'kill-buffer)
   	))
 #+end_src
-* Lang
-** elisp
+
+* Appearance
+*** Ligatures
 #+begin_src emacs-lisp
-  (setup elisp-ts-mode)
+(setup ligature
+       (:package ligature)
+       (:hook-into prog-mode-hook)
+       (:when-loaded (ligature-set-ligatures
+   'prog-mode
+   '("-<<" "-<" "-<-" "<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->" "->-" ">-" ">>-" "<->" "<-->" "<--->" "<---->" "<!--"
+     "=<<" "=<" "=<=" "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>" "=>=" ">=" ">>=" "<=>" "<==>" "<===>" "<====>" "<!---"
+     "<------" "------>" "<=====>" "<~~" "<~" "~>" "~~>" "::" ":::" "\\/" "/\\" "==" "!=" "/=" "~=" "<>" "===" "!==" "=/=" "=!="
+     ":=" ":-" ":+" "<*" "<*>" "*>" "<|" "<|>" "|>" "<." "<.>" ".>" "+:" "-:" "=:" "<******>" "(*" "*)" "++" "+++" "|-" "-|"
+     "&&" "||"))
+     ))
+
+(setup prog-mode
+  (:set prettify-symbols-unprettify-at-point t))
 #+end_src
-** Nix
+
+* Writing
+** Org
 #+begin_src emacs-lisp
-  (setup nix-mode
-         (:package nix-mode))
-  (setup nix-ts-mode
-         (:package nix-ts-mode)
-         (:file-match "\\.nix\\'")
-         (:mode-repl nix-repl)
-         ;; Install alejandra for reformatting.
-         (:nixpkgs nixfmt)
-         (:reformatters
-    	;; nixfmt-rfc-style is now recommended, but keep alejandra until I finish
-    	;; migration
-    	(nixfmt-rfc-style :program "nixfmt"))
-         (:with-mode nix-base-mode
-    		   (:hook eglot-ensure)
-    		   )
-         )
-  (setup json-mode
-         (:file-match "/flake\\.lock\\'"))
-#+end_src
-** Java
-#+begin_src emacs-lisp
-  (setup java-mode
-         (:package json-mode)
-         (:file-match "\\.java\\'" )
+  (setup org
+         (:package org)
+         (:set org-directory "~/org")
+         (:with-feature org-agenda
+    		      (:set
+    		       ;; 时间前导0
+    		       org-agenda-time-leading-zero t
+    		       ;; 默认显示区间
+    		       org-agenda-span 6
+    		       ;; agenda view 默认从周一开始显示
+    		       org-agenda-start-on-weekday 1)
+    		      )
          )
 
-
-  (setup eglot-java
-         (:package eglot-java)
-         (:hook-into java-base-mode-hook)
+  (setup org-download
+         (:package org-download)
+         (:load-after org)
+         (:set   org-download-method 'directory
+    	       org-download-image-dir "~/Library/Mobile Documents/com~apple~CloudDocs/Documents/org-attach"
+    	       org-download-heading-lvl 'nil)
          )
-#+end_src
-** Scala
-#+begin_src emacs-lisp
-  (setup scala-ts-mode
-         (:package scala-ts-mode)
-         )
-#+end_src
-** Gradle
 
-** Python
+  (setup org-modern
+         (:package org-modern)
+         (:load-after org)
+         (:when-loaded (:hook-into org-mode) (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+         (:set
+    	;; Edit settings
+    	org-auto-align-tags nil
+    	org-tags-column 0
+    	org-catch-invisible-edits 'show-and-error
+    	org-special-ctrl-a/e t
+    	org-insert-heading-respect-content t
+
+    	;; Org styling, hide markup etc.
+    	org-hide-emphasis-markers t
+    	org-pretty-entities t
+    	org-agenda-tags-column 0
+    	org-ellipsis "…")
+         (:when-loaded
+    	(modify-all-frames-parameters
+    	 '((right-divider-width . 40)
+    	   (internal-border-width . 40)))
+    	(dolist (face '(window-divider
+    			window-divider-first-pixel
+    			window-divider-last-pixel))
+    	  (face-spec-reset-face face)
+    	  (set-face-foreground face (face-attribute 'default :background)))
+    	(set-face-background 'fringe (face-attribute 'default :background))
+    	)
+        )
+
+  (setup org-modern-indent
+    (:package org-modern-indent)
+         (:load-after org-modern)
+         (:when-loaded (:hook-into org-mode))
+         (:load-after org))
+  (setup org-appear
+         (:load-after org)
+         (:package org-appear)
+         (:when-loaded (:hook-into org-mode)))
+
+#+end_src
+** Org-roam
+#+begin_src emacs-lisp :tangle no
+
+  (setup org-roam
+         (:package org-roam)
+         (:load-after org)
+         (:set org-roam-directory (file-truename org-directory))
+         (:when-loaded  (org-roam-db-autosync-mode)
+  		      (setq org-id-link-to-org-use-id t)
+  		      (setq org-roam-completion-everywhere t))
+         )
+
+  (setup org-roam-ui
+  (:load-after org-roam)
+         (:package org-roam-ui)
+         (:load-after org-roam)
+         (:when-loaded
+  	(setq org-roam-ui-sync-theme t
+                org-roam-ui-follow t
+  	      org-roam-ui-update-on-save t
+                org-roam-ui-open-on-start nil
+  	      )
+  	))
+
+  (setup org-roam-timestamps
+         (:package org-roam-timestamps)
+         (:load-after org-roam)
+         (:hook-into org-roam-mode-hook)
+         (:set org-roam-timestamps-parent-file t))
+
+
+
+  (setup org-transclusion
+    (:load-after org-roam)
+         (:package org-transclusion)
+         (:hook-into org-roam-mode-hook) )
+
+  (setup consult-org-roam
+    (:load-after org-roam consult)
+         (:package consult-org-roam)
+         (:set
+  	;; Use `ripgrep' for searching with `consult-org-roam-search'
+  	consult-org-roam-grep-func #'consult-ripgrep
+  	;; Configure a custom narrow key for `consult-buffer'
+  	consult-org-roam-buffer-narrow-key ?r
+  	;; Display org-roam buffers right after non-org-roam buffers
+  	;; in consult-buffer (and not down at the bottom)
+  	consult-org-roam-buffer-after-buffers t
+  	)
+)
+#+end_src
+*
+* Major modes
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle no
+:END:
+
+** emacs-lisp
 #+begin_src emacs-lisp
-  (setup python-mode
+(setup elisp-mode
+       (:hook flymake-mode outline-minor-mode))
+#+end_src
+
+
+** outline
+Display outlines in text like files or use it in conjunction with other major modes via ~outline-minor-mode~.
+** cobol
+#+begin_src emacs-lisp :tangle no
+(setup cobol-mode
+(:package cobol-mode)
+  (:match-file "\\.\\(cob\\|cbl\\|cpy\\)\\'"))
+#+end_src
+
+** csv
+#+begin_src emacs-lisp
+(setup csv-mode
+       (:package csv-mode)
+       (:match-file "\\.[Cc][Ss][Vv]\\'")
+       (:with-mode tsv-mode (:file-match "\\.tsv\\'"))
+       (:set csv-separators '("," "\t" ";")))
+#+end_src
+
+** git
+*** Packages
+**** git-modes
+*** Packages
+** java
+#+begin_src emacs-lisp
+(setup java-ts-mode)
+
+(setup eglot-java
+       (:package eglot-java)
+       (:load-after eglot)
+       (:hook-into java-base-mode-hook)
+       )
+
+#+end_src
+
+*** Packages
+**** gradle-mode
+#+begin_src emacs-lisp
+(setup gradle-mode
+       (:package gradle-mode)
+       (:hook-into java-base-mode-hook kotlin-mode-hook)
+       (:set gradle-executable-path "gradle"))
+#+end_src
+
+** json
+#+begin_src emacs-lisp
+(setup json-ts-mode
+       (:match-file
+        "\\(?:\\(?:\\.json\\|\\.jsonld\\|\\.babelrc\\|\\.bowerrc\\|composer\\.lock\\)\\'\\)")
+       )
+
+#+end_src
+
+*** Packages
+**** json-navigator
+#+begin_src emacs-lisp
+(setup json-navigator)
+#+end_src
+
+** kotlin
+#+begin_src emacs-lisp
+(setup kotlin-mode
+       (:package kotlin-mode))
+#+end_src
+
+** lua
+#+begin_src emacs-lisp
+(setup lua-ts-mode
+  (:match-file "\\.lua\\'")
+)
+#+end_src
+
+** markdown
+#+begin_src emacs-lisp
+(setup markdown-mode
+       (:package markdown-mode)
+       (:file-match
+        "\\.markdown\\'"
+        "\\.md\\'")
+       (:hook markdown-display-inline-images)
+       (:set markdown-enable-wiki-links t)
+       (:set markdown-fontify-code-blocks-natively t)
+       (:set markdown-header-scaling t)
+       (:set markdown-hide-markup t)
+       (:set markdown-italic-underscore t)
+       (:set markdown-blockquote-display-char '("┃" ">"))
+       (:set markdown-list-item-bullets '("⏺" "▪"))
+       (:set markdown-make-gfm-checkboxes-buttons t)
+       (:set markdown-max-image-size '(1024 . 1024)))
+#+end_src
+
+*** Packages
+**** markdown-toc
+Generate Table of Contents.
+#+begin_src emacs-lisp
+(setup markdown-toc (:package markdown-toc))
+#+end_src
+
+
+** nix
+#+begin_src emacs-lisp
+(setup nix-ts-mode
+       (:package nix-ts-mode)
+  (:file-match "\\.nix\\'")
+  (:hook eglot-mode-hook))
+(setup nix-mode
+       (:package nix-mode))
+#+end_src
+
+** nushell
+
+#+begin_src emacs-lisp
+(setup nushell-ts-mode
+       (:package nushell-ts-mode)
+       (:match-file "\\.nu\\'"))
+#+end_src
+
+** pdf
+*** Packages
+** python
+#+begin_src emacs-lisp :tangle no
+  (setup python-ts-mode
          (:file-match "\\.py\\'")
+         (:hook indent-bars-mode)
          )
 
   (setup lazy-ruff
+      (:load-after org-roam)
          (:package lazy-ruff)
   )
 
@@ -814,31 +1206,108 @@ the Garbage Collector Magic Hack
          (:package pet)
          (:hook-into python-base-mode-hook))
 #+end_src
-** Json
-#+begin_src emacs-lisp
-  (setup json-ts-mode
-         (:file-match "\\.js\\(?:on\\|[hl]int\\(?:rc\\)?\\)\\'")
-         (:with-feature json-snatcher)
-         )
+
+*** Packages
+**** python-test
+#+begin_src emacs-lisp :tangle no
+(setup python-test
+
+  :ensure t
+  :bind
+  (:map python-ts-mode-map
+        ("C-. t a" . python-test-project)
+        ("C-. t f" . python-test-file)
+        ("C-. t t" . python-test-function))
+  :init
+  (setq python-test-backend 'pytest)
+  :config
+  (setq python-test-project-root-files
+        (append '("README.md") python-test-project-root-files)))
 #+end_src
-** Just
-#+begin_src emacs-lisp
-  (setup just-mode
-         (:package just-mode)
-         (:file-match
-  	"/[Jj]ustfile\\'"
-  	"\\.[Jj]ust\\(file\\)?\\'" )
-         )
-  (setup justl
-         (:package justl))
+
+*** Packages
+**** flymake-racket
+*** Appearance
+**** Variable pitch
+Use variable-pitch font but still make sure everything aligns.
+#+begin_src emacs-lisp :tangle no
+(font-lock-add-keywords
+ 'rst-mode
+ '(("^[[:space:]-*+]+\\(\\[.\\]\\)?" 0 'fixed-pitch append))
+ 'append)
 #+end_src
-** Yaml
-#+begin_src emacs-lisp
-  (setup yaml-ts-mode)
+
+**** Bullet lists
+Pretty check-boxes as well as bullet lists.
+#+begin_src emacs-lisp :tangle no
+(font-lock-add-keywords
+ 'rst-mode
+ '(("^ *\\([-*+]\\) "
+    (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⏺"))))
+   ("^ *[-*+] \\[\\([Xx]\\)\\] "
+    (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "✕"))))))
 #+end_src
-** Docker
+
+** ruby
+*** Packages
+** scala
 #+begin_src emacs-lisp
-  (setup dockerfile-ts-mode
-    (:file-match ".*Dockerfile\\'")
+(setup scala-mode
+       (:package scala-mode)
+       (:file-match "\\.\\(scala\\|sbt\\)\\'"))
+#+end_src
+
+** sh
+#+begin_src emacs-lisp
+(setup sh-script
+       (  :hook
+          flymake-mode)
+       (:set
+        ;; Use regular indentation for line-continuation
+        sh-indent-after-continuation 'always)
+)
+#+end_src
+
+*** Packages
+** sql
+#+begin_src emacs-lisp
+(setup sql
+  (:set sql-mysql-options '("--protocol=tcp" "--prompt=" "--disable-pager")))
+#+end_src
+
+** terraform
+#+begin_src emacs-lisp :tangle no
+(setup terraform-mode
+(:package terraform-mode)
+)
+#+end_src
+
+** yaml
+#+begin_src emacs-lisp
+(setup yaml-ts-mode
+  (:file-match "\\.\\(e?ya?\\|ra\\)ml\\'")
+  (:hook indent-bars-mode)
   )
+#+end_src
+
+* Tools
+** Indentation guides
+#+begin_src emacs-lisp
+(setup indent-bars
+       (:package indent-bars)
+       (:set indent-bars-width-frac 0.2))
+#+end_src
+
+** Terminal
+*** eat
+#+begin_src emacs-lisp
+(setup eat
+       (:package eat))
+#+end_src
+
+** Check
+
+#+begin_src emacs-lisp
+(setup jinx
+(:package jinx))
 #+end_src

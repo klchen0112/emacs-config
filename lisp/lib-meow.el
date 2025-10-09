@@ -1,4 +1,6 @@
-;;; kl-meow.el ---  -*- lexical-binding: t -*-
+;;; lib-meow.el ---  -*- lexical-binding: t -*-
+;;; Commentary:
+;;; meow settings
 
 ;;;###autoload
 (defun meow-setup ()
@@ -83,5 +85,5 @@
    '("z" . meow-pop-selection)
    '("'" . repeat)
    '("<escape>" . ignore)))
-(provide 'kl-meow)
-;;; kl-meow.el ends here
+(provide 'lib-meow)
+;;; lib-meow.el ends here
