@@ -1142,28 +1142,28 @@ Display outlines in text like files or use it in conjunction with other major mo
 
 ** markdown
 #+begin_src emacs-lisp
-(setup markdown-mode
-       (:package markdown-mode)
-       (:file-match
-        "\\.markdown\\'"
-        "\\.md\\'")
-       (:hook markdown-display-inline-images)
-       (:set markdown-enable-wiki-links t)
-       (:set markdown-fontify-code-blocks-natively t)
-       (:set markdown-header-scaling t)
-       (:set markdown-hide-markup t)
-       (:set markdown-italic-underscore t)
-       (:set markdown-blockquote-display-char '("┃" ">"))
-       (:set markdown-list-item-bullets '("⏺" "▪"))
-       (:set markdown-make-gfm-checkboxes-buttons t)
-       (:set markdown-max-image-size '(1024 . 1024)))
+;;(setup markdown-mode
+;;       (:package markdown-mode)
+;;       (:file-match
+;;        "\\.markdown\\'"
+;;        "\\.md\\'")
+;;       (:hook markdown-display-inline-images)
+;;       (:set markdown-enable-wiki-links t)
+;;       (:set markdown-fontify-code-blocks-natively t)
+;;       (:set markdown-header-scaling t)
+;;       (:set markdown-hide-markup t)
+;;       (:set markdown-italic-underscore t)
+;;       (:set markdown-blockquote-display-char '("┃" ">"))
+;;       (:set markdown-list-item-bullets '("⏺" "▪"))
+;;       (:set markdown-make-gfm-checkboxes-buttons t)
+;;       (:set markdown-max-image-size '(1024 . 1024)))
 #+end_src
 
 *** Packages
 **** markdown-toc
 Generate Table of Contents.
 #+begin_src emacs-lisp
-(setup markdown-toc (:package markdown-toc))
+;;(setup markdown-toc (:package markdown-toc))
 #+end_src
 
 

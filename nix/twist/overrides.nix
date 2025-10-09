@@ -10,7 +10,11 @@ builtins.intersectAttrs esuper {
     # The libraries are improperly packaged, so disable byte-compilation for now.
     dontByteCompile = true;
   });
-
+   devdocs = esuper.devdocs.overrideAttrs (_: {
+    preBuild = ''
+      substituteInPlace devdocs.el --replace-fail "(require 'mathjax)" "(require 'mathjax nil t)"
+    '';
+  });
   emacsql-sqlite = esuper.emacsql-sqlite.overrideAttrs (old: {
     buildInputs = old.buildInputs ++ [ pkgs.sqlite ];
 

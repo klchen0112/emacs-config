@@ -198,6 +198,13 @@
     } // super.packageRequires;
   };
 
+   devdocs = _: prev: {
+    packageRequires = builtins.removeAttrs prev.packageRequires [
+      # Unused integrations.
+      "mathjax"
+    ];
+  };
+
   lean4-mode = _: super: {
     packageRequires = builtins.removeAttrs super.packageRequires [
       "lsp-mode"
