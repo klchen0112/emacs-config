@@ -1,3 +1,0 @@
-(lib-meow :fetcher github
-                     :repo "klchen0112/emacs-config"
-                     :files ("lisp/lib-meow.el"))
