@@ -437,15 +437,13 @@ configured via the =internal-border-width= in the [[Frame][Frame]] section.
 ** Meow with treesitter
 
 #+begin_src emacs-lisp
+(setup lib-meow)
   (setup meow
          (:package meow)
-         (:also-load lib-meow)
          (:with-function meow-setup (:autoload-this))
          (meow-global-mode 1)
          (meow-setup)
          )
- (setup lib-meow
-        (:package lib-meow))
 
   (setup meow-tree-sitter
          (:package meow-tree-sitter)
